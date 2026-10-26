@@ -46,7 +46,12 @@
               min="0"
               placeholder="0"
               class="w-full pl-11 pr-4 py-2.5 rounded-2xl glass-input text-lg font-semibold text-[#0f2547] font-mono"
+              :class="{ '!border-rose-500 !ring-1 !ring-rose-500': isInsufficientTransfer }"
             />
+          </div>
+          <div v-if="isInsufficientTransfer" class="text-[11px] font-medium text-rose-500 mt-1 flex items-center gap-1">
+            <DynamicIcon name="AlertCircle" :size="13" />
+            <span>Nominal transfer melebihi saldo rekening sumber (Maks: {{ store.formatMoney(selectedSourceWallet?.balance || 0) }})</span>
           </div>
           <!-- Quick Amount Chips -->
           <div class="flex flex-wrap gap-1.5 mt-2">
@@ -236,11 +241,27 @@ const availableCategories = computed(() => {
   return store.categories.filter(c => c.type === form.value.type)
 })
 
+const selectedSourceWallet = computed(() => {
+  return store.wallets.find(w => w.id === form.value.sourceWalletId) || null
+})
+
+const isInsufficientTransfer = computed(() => {
+  if (form.value.type === 'TRANSFER' && selectedSourceWallet.value) {
+    const amt = Number(form.value.amount) || 0
+    return amt > (Number(selectedSourceWallet.value.balance) || 0)
+  }
+  return false
+})
+
 const isValid = computed(() => {
   if (!form.value.amount || form.value.amount <= 0) return false
   if (!form.value.sourceWalletId) return false
   if (form.value.type === 'TRANSFER') {
-    return form.value.targetWalletId && form.value.targetWalletId !== form.value.sourceWalletId
+    if (!form.value.targetWalletId || form.value.targetWalletId === form.value.sourceWalletId) return false
+    if (selectedSourceWallet.value && (Number(form.value.amount) || 0) > (Number(selectedSourceWallet.value.balance) || 0)) {
+      return false
+    }
+    return true
   }
   return !!form.value.categoryId
 })

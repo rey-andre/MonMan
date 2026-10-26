@@ -676,8 +676,13 @@ export const useFinanceStore = defineStore('finance', {
       } else if (type === 'TRANSFER') {
         src = this.wallets.find(w => w.id === sourceWalletId)
         tgt = this.wallets.find(w => w.id === targetWalletId)
-        if (src) src.balance = Math.max(0, (Number(src.balance) || 0) - parsedAmount)
-        if (tgt) tgt.balance = (Number(tgt.balance) || 0) + parsedAmount
+        if (!src || !tgt) return false
+        if ((Number(src.balance) || 0) < parsedAmount) {
+          console.warn(`[Transaction] Saldo ${src.name} tidak mencukupi untuk transfer`)
+          return false
+        }
+        src.balance = (Number(src.balance) || 0) - parsedAmount
+        tgt.balance = (Number(tgt.balance) || 0) + parsedAmount
       }
 
       this.transactions.unshift(newTx)
@@ -740,7 +745,7 @@ export const useFinanceStore = defineStore('finance', {
         src = this.wallets.find(w => w.id === tx.sourceWalletId)
         tgt = this.wallets.find(w => w.id === tx.targetWalletId)
         if (src) src.balance = (Number(src.balance) || 0) + amount
-        if (tgt) tgt.balance = Math.max(0, (Number(tgt.balance) || 0) - amount)
+        if (tgt) tgt.balance = (Number(tgt.balance) || 0) - amount
       }
 
       this.transactions.splice(idx, 1)
