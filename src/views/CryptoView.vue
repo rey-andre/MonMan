@@ -209,12 +209,14 @@
             class="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 font-bold text-xs"
             :class="ctx.type === 'BUY' 
               ? 'bg-emerald-100 text-emerald-700' 
-              : ctx.type === 'SELL' 
-                ? 'bg-rose-100 text-rose-700' 
-                : 'bg-blue-100 text-blue-700'"
+              : ctx.type === 'TRANSFER_IN'
+                ? 'bg-blue-100 text-blue-700'
+                : ctx.type === 'SELL' 
+                  ? 'bg-rose-100 text-rose-700' 
+                  : 'bg-orange-100 text-orange-700'"
           >
             <DynamicIcon 
-              :name="ctx.type === 'BUY' ? 'ArrowDownLeft' : ctx.type === 'SELL' ? 'ArrowUpRight' : 'ArrowLeftRight'" 
+              :name="(ctx.type === 'BUY' || ctx.type === 'TRANSFER_IN') ? 'ArrowDownLeft' : 'ArrowUpRight'" 
               :size="18" 
             />
           </div>
@@ -222,14 +224,14 @@
           <div class="min-w-0">
             <div class="flex items-center gap-1.5">
               <span class="text-[13.5px] font-semibold text-[#0f2547]">
-                {{ ctx.type === 'BUY' ? 'Beli' : ctx.type === 'SELL' ? 'Jual' : 'Terima' }} {{ ctx.symbol }}
+                {{ ctx.type === 'BUY' ? 'Beli' : ctx.type === 'SELL' ? 'Jual' : ctx.type === 'TRANSFER_IN' ? 'Terima' : 'Kirim' }} {{ ctx.symbol }}
               </span>
               <span class="text-[10px] px-1.5 py-0.2 rounded font-mono font-medium bg-white/70 text-[#41587f]">
                 @ {{ ctx.fiatCurrency === 'USD' ? '$' : 'Rp' }}{{ Number(ctx.pricePerCoin).toLocaleString('en-US', { maximumFractionDigits: 2 }) }}
               </span>
             </div>
             <div class="text-[11.5px] text-[#41587f] font-mono mt-0.5 truncate">
-              {{ store.isPrivacyMode ? '••••••' : (ctx.type === 'BUY' ? '+' : '−') + formatCryptoAmount(ctx.amount) }} {{ ctx.symbol }}
+              {{ store.isPrivacyMode ? '••••••' : ((ctx.type === 'BUY' || ctx.type === 'TRANSFER_IN') ? '+' : '−') + formatCryptoAmount(ctx.amount) }} {{ ctx.symbol }}
             </div>
             <div class="text-[10.5px] text-[#41587f]/80 mt-0.5">
               {{ ctx.transactionDate }}
@@ -243,7 +245,7 @@
           <div class="text-right">
             <div 
               class="text-[13.5px] font-semibold font-mono"
-              :class="ctx.type === 'BUY' ? 'text-emerald-600' : 'text-rose-600'"
+              :class="(ctx.type === 'BUY' || ctx.type === 'TRANSFER_IN') ? 'text-emerald-600' : 'text-rose-600'"
             >
               {{ store.isPrivacyMode ? '••••••••' : (ctx.fiatCurrency === 'USD' ? '$' + Number(ctx.fiatAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : formatIdr(ctx.fiatAmount)) }}
             </div>
