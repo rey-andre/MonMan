@@ -181,7 +181,7 @@
         rel="noopener noreferrer"
         class="font-semibold text-[#2b63d6] hover:underline inline-flex items-center gap-0.5"
       >
-        Rey0
+        Rey(0)
       </a>
     </div>
   </div>
