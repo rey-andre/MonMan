@@ -385,13 +385,6 @@ const savingsRate = computed(() => {
   return Math.max(0, rate)
 })
 
-function formatShortIdr(val) {
-  if (!val || val === 0) return 'Rp 0'
-  if (val >= 1000000) return `Rp ${(val / 1000000).toFixed(1)} Jt`
-  if (val >= 1000) return `Rp ${(val / 1000).toFixed(0)} Rb`
-  return `Rp ${val}`
-}
-
 const donutSegments = computed(() => {
   const cats = store.spendingByCategory
   let currentOffset = 0

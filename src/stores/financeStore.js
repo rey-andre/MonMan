@@ -455,11 +455,11 @@ export const useFinanceStore = defineStore('finance', {
       return formatIdr(amount, withPrefix)
     },
 
-    formatShortMoney(amount) {
+    formatShortMoney(amount, withPrefix = true) {
       if (this.isPrivacyMode) {
         return '••••••'
       }
-      return formatShortIdr(amount)
+      return formatShortIdr(amount, withPrefix)
     },
 
     formatCryptoMoney(amount, maxDigits = 10) {

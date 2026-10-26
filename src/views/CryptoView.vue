@@ -277,7 +277,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useFinanceStore } from '@/stores/financeStore'
-import { formatIdr, formatCryptoAmount } from '@/utils/formatters'
+import { formatIdr, formatCryptoAmount, formatShortIdr } from '@/utils/formatters'
 import DynamicIcon from '@/components/DynamicIcon.vue'
 
 const emit = defineEmits(['open-crypto-tx', 'edit-crypto'])
@@ -288,14 +288,6 @@ const totalCryptoValueUsd = computed(() => {
   if (store.usdToIdrRate <= 0) return 0
   return store.totalCryptoValueIdr / store.usdToIdrRate
 })
-
-function formatShortIdr(val) {
-  if (!val || val === 0) return 'Rp 0'
-  if (val >= 1000000000) return `Rp ${(val / 1000000000).toFixed(2)} M`
-  if (val >= 1000000) return `Rp ${(val / 1000000).toFixed(1)} Jt`
-  if (val >= 1000) return `Rp ${(val / 1000).toFixed(0)} Rb`
-  return `Rp ${val}`
-}
 
 function getCoinGradient(symbol) {
   const sym = (symbol || '').toUpperCase()

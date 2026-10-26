@@ -70,15 +70,28 @@ export function formatRelativeDate(dateString) {
 }
 
 /**
- * Compact format for abbreviated large amounts (e.g. 5.000.000 -> 5.0 Jt)
+ * Compact format for abbreviated large amounts (e.g. 5.000.000 -> Rp 5.0 Jt)
  */
-export function formatShortIdr(val) {
-  if (val === undefined || val === null || isNaN(val)) return '0'
+export function formatShortIdr(val, withPrefix = true) {
+  if (val === undefined || val === null || isNaN(val)) {
+    return withPrefix ? 'Rp 0' : '0'
+  }
   const num = Number(val)
-  if (num >= 1000000000) return (num / 1000000000).toFixed(1) + ' M'
-  if (num >= 1000000) return (num / 1000000).toFixed(1) + ' Jt'
-  if (num >= 1000) return (num / 1000).toFixed(0) + ' Rb'
-  return String(num)
+  const isNegative = num < 0
+  const absNum = Math.abs(num)
+  let text = ''
+  if (absNum >= 1000000000) {
+    text = (absNum / 1000000000).toFixed(1) + ' M'
+  } else if (absNum >= 1000000) {
+    text = (absNum / 1000000).toFixed(1) + ' Jt'
+  } else if (absNum >= 1000) {
+    text = (absNum / 1000).toFixed(0) + ' Rb'
+  } else {
+    text = String(absNum)
+  }
+
+  const prefix = withPrefix ? (isNegative ? '−Rp ' : 'Rp ') : (isNegative ? '−' : '')
+  return `${prefix}${text}`
 }
 
 /**
