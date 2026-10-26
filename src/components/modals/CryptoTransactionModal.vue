@@ -97,7 +97,19 @@
 
         <!-- Jumlah Koin (10 Desimal) -->
         <div>
-          <label class="block text-xs font-semibold text-[#41587f] mb-1">Jumlah Unit Koin (Hingga 10 Desimal)</label>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-xs font-semibold text-[#41587f]">Jumlah Unit Koin (Hingga 10 Desimal)</label>
+            <div v-if="form.type === 'SELL' || form.type === 'TRANSFER_OUT'" class="text-[11px] text-[#41587f]">
+              Saldo: <strong class="font-mono text-[#0f2547]">{{ currentHolding }} {{ form.symbol }}</strong>
+              <button
+                type="button"
+                @click="setMaxAmount"
+                class="ml-1 text-[10px] px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 font-semibold hover:bg-blue-200 transition-colors cursor-pointer"
+              >
+                Maks
+              </button>
+            </div>
+          </div>
           <input
             v-model="form.amount"
             type="number"
@@ -105,8 +117,13 @@
             min="0"
             placeholder="0.0000000000"
             class="w-full px-3.5 py-2.5 rounded-2xl glass-input text-base font-semibold text-[#0f2547] font-mono"
+            :class="{ '!border-rose-500 !ring-1 !ring-rose-500': isInsufficientCrypto }"
             @input="recalculatePrice"
           />
+          <div v-if="isInsufficientCrypto" class="text-[11px] font-medium text-rose-500 mt-1 flex items-center gap-1">
+            <DynamicIcon name="AlertCircle" :size="13" />
+            <span>Jumlah koin melebihi saldo yang dimiliki (Maks: {{ currentHolding }} {{ form.symbol }})</span>
+          </div>
         </div>
 
         <!-- Nilai Modal Fiat yang Diinvestasikan -->
@@ -285,8 +302,34 @@ function recalculatePrice() {
   }
 }
 
+const currentHolding = computed(() => {
+  const sym = (form.symbol || '').trim().toUpperCase()
+  const found = store.cryptoAssets.find(c => (c.symbol || '').toUpperCase() === sym)
+  return found ? (Number(found.amount) || 0) : 0
+})
+
+const isInsufficientCrypto = computed(() => {
+  if (form.type === 'SELL' || form.type === 'TRANSFER_OUT') {
+    const amt = Number(form.amount) || 0
+    return amt > currentHolding.value
+  }
+  return false
+})
+
+function setMaxAmount() {
+  if (currentHolding.value > 0) {
+    form.amount = currentHolding.value
+    recalculatePrice()
+  }
+}
+
 const isValid = computed(() => {
-  return form.symbol && form.symbol.trim().length > 0 && Number(form.amount) > 0 && Number(form.fiatAmount) > 0
+  const hasBasic = form.symbol && form.symbol.trim().length > 0 && Number(form.amount) > 0 && Number(form.fiatAmount) > 0
+  if (!hasBasic) return false
+  if (form.type === 'SELL' || form.type === 'TRANSFER_OUT') {
+    return (Number(form.amount) || 0) <= currentHolding.value
+  }
+  return true
 })
 
 function close() {

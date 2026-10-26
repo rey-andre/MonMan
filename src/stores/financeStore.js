@@ -1022,11 +1022,19 @@ export const useFinanceStore = defineStore('finance', {
 
       // 1. Adjust Crypto Asset Balance
       let asset = this.cryptoAssets.find(c => c.symbol.toUpperCase() === cleanSymbol)
+      if (newCtx.type === 'SELL' || newCtx.type === 'TRANSFER_OUT') {
+        const curAmt = asset ? (Number(asset.amount) || 0) : 0
+        if (curAmt < parsedAmount) {
+          console.warn(`[Crypto Transaction] Saldo koin ${cleanSymbol} tidak mencukupi (${curAmt} < ${parsedAmount})`)
+          return false
+        }
+      }
+
       if (asset) {
         if (newCtx.type === 'BUY' || newCtx.type === 'TRANSFER_IN') {
-          asset.amount = (Number(asset.amount) || 0) + parsedAmount
+          asset.amount = Number(((Number(asset.amount) || 0) + parsedAmount).toFixed(10))
         } else if (newCtx.type === 'SELL' || newCtx.type === 'TRANSFER_OUT') {
-          asset.amount = Math.max(0, (Number(asset.amount) || 0) - parsedAmount)
+          asset.amount = Number((Math.max(0, (Number(asset.amount) || 0) - parsedAmount)).toFixed(10))
         }
       } else if (newCtx.type === 'BUY' || newCtx.type === 'TRANSFER_IN') {
         const coinNames = { BTC: 'Bitcoin', ETH: 'Ethereum', SOL: 'Solana', BNB: 'BNB', DOGE: 'Dogecoin', XRP: 'Ripple', ADA: 'Cardano' }
