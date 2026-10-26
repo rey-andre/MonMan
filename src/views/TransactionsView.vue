@@ -1,20 +1,14 @@
 <template>
   <div class="space-y-3.5">
-    <!-- Header -->
-    <div class="flex items-center justify-between pb-1">
-      <div>
-        <h1 class="text-[20px] font-semibold tracking-tight text-[#0f2547]">Riwayat Mutasi</h1>
-        <p class="text-[13px] text-[#41587f]">Pemasukan, pengeluaran, dan pindah saldo</p>
-      </div>
-      <button
-        @click="$emit('open-transaction')"
-        class="py-2 px-3.5 rounded-[18px] text-white font-medium text-xs flex items-center gap-1.5 shadow-sm active:scale-95 transition-all"
-        style="background: linear-gradient(135deg, var(--blue), #7fb0ff);"
-      >
-        <DynamicIcon name="Plus" :size="15" />
-        <span>Catat Baru</span>
-      </button>
-    </div>
+    <!-- Action: Catat Transaksi Baru -->
+    <button
+      @click="$emit('open-transaction')"
+      class="w-full py-2.5 px-4 rounded-2xl text-white font-semibold text-xs shadow-md active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer"
+      style="background: linear-gradient(135deg, var(--blue), #7fb0ff);"
+    >
+      <DynamicIcon name="PlusCircle" :size="15" />
+      <span>+ Catat Transaksi Baru</span>
+    </button>
 
     <!-- Quick In/Out Stats -->
     <div class="grid grid-cols-2 gap-2.5">

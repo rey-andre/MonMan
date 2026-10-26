@@ -12,6 +12,12 @@
       :class="{ '!pb-4': route.path === '/auth' }"
       style="-webkit-overflow-scrolling: touch;"
     >
+      <!-- Universal Top Header (Hidden on Auth page) -->
+      <Header 
+        v-if="route.path !== '/auth'"
+        @open-profile="openProfileModal"
+      />
+
       <router-view 
         v-slot="{ Component }"
         @open-transaction="openTransactionModal"
@@ -82,11 +88,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useFinanceStore } from '@/stores/financeStore'
 import { useAuthStore } from '@/stores/authStore'
 import { useThemeStore } from '@/stores/themeStore'
+import Header from '@/components/Header.vue'
 import BottomNav from '@/components/BottomNav.vue'
 import TransactionModal from '@/components/modals/TransactionModal.vue'
 import WalletModal from '@/components/modals/WalletModal.vue'
@@ -141,6 +148,16 @@ function openDebtModal(debt = null) {
 function openProfileModal() {
   isProfileModalOpen.value = true
 }
+
+// Reset scroll container position when switching pages
+watch(
+  () => route.path,
+  () => {
+    if (scrollContainer.value) {
+      scrollContainer.value.scrollTop = 0
+    }
+  }
+)
 
 // Lifecycle
 onMounted(async () => {

@@ -1,23 +1,5 @@
 <template>
   <div class="space-y-3.5">
-    <!-- Header -->
-    <div class="flex items-center justify-between pb-1">
-      <div>
-        <h1 class="text-[20px] font-semibold tracking-tight text-[#0f2547]">Portofolio Kripto</h1>
-        <p class="text-[13px] text-[#41587f]">Pertumbuhan investasi & mutasi beli/jual 10 desimal</p>
-      </div>
-      <div class="flex items-center gap-2">
-        <button
-          @click="store.refreshMarketRates"
-          :disabled="store.isSyncingRates"
-          class="w-10 h-10 rounded-2xl glass flex items-center justify-center text-[#41587f] hover:text-[#0f2547] active:scale-95 transition-all disabled:opacity-50"
-          title="Perbarui Harga Pasar Kripto"
-        >
-          <DynamicIcon name="RefreshCw" :size="16" :class="{ 'animate-spin text-[#4f8cff]': store.isSyncingRates }" />
-        </button>
-      </div>
-    </div>
-
     <!-- Hero Investment Growth Liquid Glass Card -->
     <section class="glass p-4 rounded-[26px] relative overflow-hidden" aria-label="Ringkasan Pertumbuhan Investasi">
       <div class="flex items-center justify-between mb-1">

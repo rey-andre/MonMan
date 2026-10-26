@@ -1,21 +1,5 @@
 <template>
   <div class="space-y-3.5">
-    <!-- Header -->
-    <div class="flex items-center justify-between pb-1">
-      <div>
-        <h1 class="text-[20px] font-semibold tracking-tight text-[#0f2547]">Dompet & Portofolio</h1>
-        <p class="text-[13px] text-[#41587f]">Rekening fiat dan aset kripto presisi 10 desimal</p>
-      </div>
-      <button
-        @click="store.refreshMarketRates"
-        :disabled="store.isSyncingRates"
-        class="w-10 h-10 rounded-2xl glass flex items-center justify-center text-[#41587f] hover:text-[#0f2547] active:scale-95 transition-all disabled:opacity-50"
-        title="Perbarui Harga & Kurs"
-      >
-        <DynamicIcon name="RefreshCw" :size="16" :class="{ 'animate-spin text-[#4f8cff]': store.isSyncingRates }" />
-      </button>
-    </div>
-
     <!-- Dual Summary Glass Cards -->
     <div class="grid grid-cols-2 gap-2.5">
       <div class="glass p-3.5 rounded-[22px]">

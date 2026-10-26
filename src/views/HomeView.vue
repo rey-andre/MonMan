@@ -1,8 +1,5 @@
 <template>
   <div class="space-y-3.5">
-    <!-- Top Bar / Header (referensi-ui.html: header) -->
-    <Header @open-profile="$emit('open-profile')" />
-
     <!-- Section: Total Net Worth Card (referensi-ui.html: .balance) -->
     <NetWorthCard />
 
@@ -122,7 +119,6 @@
 import { computed } from 'vue'
 import { useFinanceStore } from '@/stores/financeStore'
 import { formatIdr, formatRelativeDate } from '@/utils/formatters'
-import Header from '@/components/Header.vue'
 import NetWorthCard from '@/components/NetWorthCard.vue'
 import QuickActions from '@/components/QuickActions.vue'
 import AnalyticsCards from '@/components/AnalyticsCards.vue'

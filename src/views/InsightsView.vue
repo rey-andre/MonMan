@@ -1,16 +1,5 @@
 <template>
   <div class="space-y-3.5">
-    <!-- Header -->
-    <div class="flex items-center justify-between pb-1">
-      <div>
-        <h1 class="text-[20px] font-semibold tracking-tight text-[#0f2547]">Analisis Finansial</h1>
-        <p class="text-[13px] text-[#41587f]">Arus kas dan alokasi aset bulan {{ currentMonthName }}</p>
-      </div>
-      <div class="w-10 h-10 rounded-2xl glass flex items-center justify-center text-[#4f8cff]">
-        <DynamicIcon name="PieChart" :size="18" />
-      </div>
-    </div>
-
     <!-- Monthly Cash Flow Overview Card -->
     <section class="glass p-4 rounded-[26px]" aria-label="Arus Kas">
       <h2 class="text-[14px] font-medium text-[#41587f] mb-3">Arus Kas Bulan Ini</h2>
