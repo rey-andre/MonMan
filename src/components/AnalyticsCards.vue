@@ -73,7 +73,7 @@
           {{ store.isPrivacyMode ? '••••••' : (store.netDebtBalance >= 0 ? '+' : '−') + formatShortIdr(Math.abs(store.netDebtBalance)) }}
         </div>
         <p class="text-[11.5px] text-[#41587f] mt-0.5 mb-2.5">
-          {{ store.netDebtBalance >= 0 ? 'Surplus Hak Tagih' : 'Defisit Kewajiban' }}
+          {{ !hasActiveDebts ? 'Belum ada catatan aktif' : (store.netDebtBalance >= 0 ? 'Surplus Hak Tagih' : 'Defisit Kewajiban') }}
         </p>
 
         <!-- Piutang & Hutang Breakdown Row -->
@@ -102,7 +102,7 @@
 
       <!-- Ratio Progress Bar -->
       <div class="mt-2.5">
-        <div class="h-2 rounded-full bg-white/50 overflow-hidden flex border border-white/60">
+        <div v-if="hasActiveDebts" class="h-2 rounded-full bg-white/50 overflow-hidden flex border border-white/60">
           <div 
             class="h-full transition-all duration-500"
             :style="{ 
@@ -120,6 +120,7 @@
             title="Hutang"
           ></div>
         </div>
+        <div v-else class="h-2 rounded-full bg-white/40 border border-white/60" title="Belum ada catatan aktif"></div>
       </div>
     </section>
   </div>
@@ -133,9 +134,13 @@ import { formatShortIdr } from '@/utils/formatters'
 const store = useFinanceStore()
 const circumference = 276.46
 
+const hasActiveDebts = computed(() => {
+  return (store.totalPiutang + store.totalHutang) > 0
+})
+
 const piutangRatio = computed(() => {
   const total = store.totalPiutang + store.totalHutang
-  if (total <= 0) return 50
+  if (total <= 0) return 0
   return Math.round((store.totalPiutang / total) * 100)
 })
 
