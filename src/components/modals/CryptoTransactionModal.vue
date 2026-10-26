@@ -18,40 +18,51 @@
         </button>
       </div>
 
-      <!-- Type Switcher (Beli vs Jual vs Transfer) -->
-      <div class="grid grid-cols-3 gap-1 p-1 my-3.5 bg-white/40 rounded-2xl border border-white/60">
+      <!-- Type Switcher (Beli vs Jual vs Transfer In vs Transfer Out) -->
+      <div class="grid grid-cols-4 gap-1 p-1 my-3.5 bg-white/40 rounded-2xl border border-white/60">
         <button
           type="button"
           @click="form.type = 'BUY'"
-          class="py-2 text-xs font-semibold rounded-xl transition-all min-h-[38px] flex items-center justify-center gap-1"
+          class="py-2 text-[11px] font-semibold rounded-xl transition-all min-h-[38px] flex items-center justify-center gap-0.5"
           :class="form.type === 'BUY' 
             ? 'bg-emerald-500 text-white shadow-sm' 
             : 'text-[#41587f] hover:text-[#0f2547]'"
         >
-          <DynamicIcon name="ArrowDownLeft" :size="13" />
-          <span>Beli (Buy)</span>
+          <DynamicIcon name="ArrowDownLeft" :size="12" />
+          <span>Beli</span>
         </button>
         <button
           type="button"
           @click="form.type = 'SELL'"
-          class="py-2 text-xs font-semibold rounded-xl transition-all min-h-[38px] flex items-center justify-center gap-1"
+          class="py-2 text-[11px] font-semibold rounded-xl transition-all min-h-[38px] flex items-center justify-center gap-0.5"
           :class="form.type === 'SELL' 
             ? 'bg-rose-500 text-white shadow-sm' 
             : 'text-[#41587f] hover:text-[#0f2547]'"
         >
-          <DynamicIcon name="ArrowUpRight" :size="13" />
-          <span>Jual (Sell)</span>
+          <DynamicIcon name="ArrowUpRight" :size="12" />
+          <span>Jual</span>
         </button>
         <button
           type="button"
           @click="form.type = 'TRANSFER_IN'"
-          class="py-2 text-xs font-semibold rounded-xl transition-all min-h-[38px] flex items-center justify-center gap-1"
+          class="py-2 text-[11px] font-semibold rounded-xl transition-all min-h-[38px] flex items-center justify-center gap-0.5"
           :class="form.type === 'TRANSFER_IN' 
             ? 'bg-[#4f8cff] text-white shadow-sm' 
             : 'text-[#41587f] hover:text-[#0f2547]'"
         >
-          <DynamicIcon name="ArrowLeftRight" :size="13" />
+          <DynamicIcon name="ArrowDownLeft" :size="12" />
           <span>Terima</span>
+        </button>
+        <button
+          type="button"
+          @click="form.type = 'TRANSFER_OUT'"
+          class="py-2 text-[11px] font-semibold rounded-xl transition-all min-h-[38px] flex items-center justify-center gap-0.5"
+          :class="form.type === 'TRANSFER_OUT' 
+            ? 'bg-amber-500 text-white shadow-sm' 
+            : 'text-[#41587f] hover:text-[#0f2547]'"
+        >
+          <DynamicIcon name="ArrowUpRight" :size="12" />
+          <span>Kirim</span>
         </button>
       </div>
 
@@ -102,7 +113,7 @@
         <div>
           <div class="flex items-center justify-between mb-1">
             <label class="block text-xs font-semibold text-[#41587f]">
-              {{ form.type === 'BUY' ? 'Modal Fiat yang Diinvestasikan' : 'Hasil Fiat Penjualan' }}
+              {{ form.type === 'BUY' ? 'Modal Fiat yang Diinvestasikan' : form.type === 'SELL' ? 'Hasil Fiat Penjualan' : form.type === 'TRANSFER_IN' ? 'Estimasi Nilai Fiat Masuk' : 'Estimasi Nilai Fiat Keluar' }}
             </label>
             <!-- Currency selector IDR vs USD -->
             <div class="flex p-0.5 rounded-lg bg-white/40 border border-white/60 text-[10px] font-semibold">
@@ -149,7 +160,7 @@
         <!-- Rekening Sumber Fiat (Opsional) -->
         <div>
           <label class="block text-xs font-semibold text-[#41587f] mb-1">
-            {{ form.type === 'BUY' ? 'Potong dari Rekening Fiat (Opsional)' : 'Setor ke Rekening Fiat (Opsional)' }}
+            {{ form.type === 'BUY' ? 'Potong dari Rekening Fiat (Opsional)' : form.type === 'SELL' ? 'Setor ke Rekening Fiat (Opsional)' : form.type === 'TRANSFER_IN' ? 'Hubungkan ke Rekening Fiat (Opsional)' : 'Potong Biaya dari Rekening Fiat (Opsional)' }}
           </label>
           <select
             v-model="form.sourceWalletId"
@@ -194,7 +205,7 @@
           @click="handleSave"
           :disabled="!isValid"
           class="w-full py-3.5 rounded-2xl text-white font-semibold text-sm shadow-md transition-all active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2"
-          :style="{ background: form.type === 'BUY' ? 'linear-gradient(135deg, #10b981, #34d399)' : form.type === 'SELL' ? 'linear-gradient(135deg, #f43f5e, #fb7185)' : 'linear-gradient(135deg, var(--blue), #7fb0ff)' }"
+          :style="{ background: form.type === 'BUY' ? 'linear-gradient(135deg, #10b981, #34d399)' : form.type === 'SELL' ? 'linear-gradient(135deg, #f43f5e, #fb7185)' : form.type === 'TRANSFER_IN' ? 'linear-gradient(135deg, var(--blue), #7fb0ff)' : 'linear-gradient(135deg, #f59e0b, #fbbf24)' }"
         >
           <DynamicIcon name="Check" :size="16" />
           <span>Simpan Mutasi Kripto</span>
