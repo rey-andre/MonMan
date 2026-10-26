@@ -361,12 +361,14 @@ export const useFinanceStore = defineStore('finance', {
     monthlyExpenses(state) {
       const now = new Date()
       const curYear = now.getFullYear()
-      const curMonth = now.getMonth()
+      const curMonth = now.getMonth() + 1
+      const yearMonthPrefix = `${curYear}-${String(curMonth).padStart(2, '0')}`
 
       return state.transactions.filter(tx => {
-        if (tx.type !== 'EXPENSE') return false
+        if (tx.type !== 'EXPENSE' || !tx.date) return false
+        if (tx.date.startsWith(yearMonthPrefix)) return true
         const d = new Date(tx.date)
-        return d.getFullYear() === curYear && d.getMonth() === curMonth
+        return d.getFullYear() === curYear && (d.getMonth() + 1) === curMonth
       })
     },
 

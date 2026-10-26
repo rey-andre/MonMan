@@ -362,13 +362,15 @@ function formatDueDate(dateStr) {
 const totalIncomeThisMonth = computed(() => {
   const now = new Date()
   const curYear = now.getFullYear()
-  const curMonth = now.getMonth()
+  const curMonth = now.getMonth() + 1
+  const yearMonthPrefix = `${curYear}-${String(curMonth).padStart(2, '0')}`
 
   return store.transactions
     .filter(tx => {
-      if (tx.type !== 'INCOME') return false
+      if (tx.type !== 'INCOME' || !tx.date) return false
+      if (tx.date.startsWith(yearMonthPrefix)) return true
       const d = new Date(tx.date)
-      return d.getFullYear() === curYear && d.getMonth() === curMonth
+      return d.getFullYear() === curYear && (d.getMonth() + 1) === curMonth
     })
     .reduce((sum, tx) => sum + (Number(tx.amount) || 0), 0)
 })

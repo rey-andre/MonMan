@@ -31,18 +31,15 @@
           class="transition-all duration-500 ease-out"
         />
 
-        <text x="60" y="58" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink)" font-family="Outfit,sans-serif">
+        <text x="60" y="65" text-anchor="middle" font-size="14.5" font-weight="600" fill="var(--ink)" font-family="Outfit,sans-serif">
           {{ store.formatShortMoney(store.totalMonthlyExpense) }}
-        </text>
-        <text x="60" y="73" text-anchor="middle" font-size="9.5" fill="var(--ink2)" font-family="Outfit,sans-serif">
-          target 5 Jt
         </text>
       </svg>
 
       <!-- Legend (referensi-ui.html: .legend) -->
-      <ul class="mt-2.5 space-y-1.5 text-[12.5px] text-[#0f2547]">
+      <ul v-if="displayCategories.length > 0" class="mt-2.5 space-y-1.5 text-[12.5px] text-[#0f2547]">
         <li 
-          v-for="cat in topCategories" 
+          v-for="cat in displayCategories" 
           :key="cat.name"
           class="flex items-center justify-between"
         >
@@ -53,6 +50,9 @@
           <span class="text-[#41587f] text-[11px] font-mono shrink-0 ml-1">{{ cat.percentage }}%</span>
         </li>
       </ul>
+      <div v-else class="mt-3 py-2 text-center text-[11px] text-[#41587f]">
+        Belum ada pengeluaran bulan ini
+      </div>
     </section>
 
     <!-- Card 2: Ringkasan Hutang & Piutang (referensi-ui.html: .goal) -->
@@ -145,27 +145,41 @@ const piutangRatio = computed(() => {
   return Math.round((store.totalPiutang / total) * 100)
 })
 
-const topCategories = computed(() => {
+const displayCategories = computed(() => {
   const cats = store.spendingByCategory
-  if (cats.length === 0) {
-    return [
-      { name: 'Kuliner', color: '#ff9a4d', percentage: 46 },
-      { name: 'Transport', color: '#4f8cff', percentage: 30 },
-      { name: 'Belanja', color: '#a9cdff', percentage: 24 }
-    ]
+  if (!cats || cats.length === 0) return []
+
+  if (cats.length <= 3) {
+    return cats
   }
-  return cats.slice(0, 3)
+
+  const top2 = cats.slice(0, 2)
+  const rest = cats.slice(2)
+  const restTotal = rest.reduce((sum, c) => sum + (Number(c.total) || 0), 0)
+  const restPercentage = Math.max(0, 100 - top2.reduce((sum, c) => sum + c.percentage, 0))
+
+  return [
+    ...top2,
+    {
+      name: 'Lainnya',
+      color: '#a9cdff',
+      total: restTotal,
+      percentage: restPercentage
+    }
+  ]
 })
 
 const donutSegments = computed(() => {
-  const cats = topCategories.value
+  const cats = store.spendingByCategory
+  if (!cats || cats.length === 0) return []
+
   let currentOffset = 0
 
   return cats.map(cat => {
     const dashLength = (cat.percentage / 100) * circumference
     const seg = {
       color: cat.color,
-      dashLength: Math.max(0, dashLength - 3),
+      dashLength: Math.max(0, dashLength - 2),
       dashOffset: -currentOffset
     }
     currentOffset += dashLength
