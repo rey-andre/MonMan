@@ -174,35 +174,4 @@ function isActive(path) {
   box-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
   pointer-events: none;
 }
-
-/* Dark Mode Liquid Glass Navigation */
-:global(html.dark) .liquid-nav {
-  background: linear-gradient(
-    135deg, 
-    rgba(22, 34, 58, 0.75) 0%, 
-    rgba(16, 26, 45, 0.62) 50%, 
-    rgba(22, 34, 58, 0.75) 100%
-  );
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  box-shadow: 
-    0 16px 36px -6px rgba(0, 0, 0, 0.50),
-    0 4px 14px rgba(0, 0, 0, 0.35),
-    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.20),
-    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.25),
-    inset 0 0 12px rgba(255, 255, 255, 0.05);
-}
-
-:global(html.dark) .nav-gloss {
-  background: linear-gradient(
-    180deg, 
-    rgba(255, 255, 255, 0.12) 0%, 
-    rgba(255, 255, 255, 0.01) 80%, 
-    transparent 100%
-  );
-}
-
-:global(html.dark) .nav-tab.inactive:hover {
-  background: rgba(255, 255, 255, 0.10);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15);
-}
 </style>

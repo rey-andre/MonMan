@@ -4,7 +4,7 @@ export const THEME_STORAGE_KEY = 'monman_theme'
 
 export const useThemeStore = defineStore('theme', {
   state: () => ({
-    currentTheme: localStorage.getItem(THEME_STORAGE_KEY) || 'system',
+    currentTheme: localStorage.getItem(THEME_STORAGE_KEY) || 'light',
     systemIsDark: typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)').matches : false,
     mediaQueryListener: null
   }),
