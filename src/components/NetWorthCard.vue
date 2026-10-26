@@ -10,7 +10,7 @@
           :title="store.isPrivacyMode ? 'Tampilkan Nilai Keuangan' : 'Sembunyikan Nilai Keuangan'"
           aria-label="Toggle Sembunyikan Nilai"
         >
-          <DynamicIcon :name="store.isPrivacyMode ? 'EyeOff' : 'Eye'" :size="13" />
+          <DynamicIcon :name="store.isPrivacyMode ? 'EyeClosed' : 'Eye'" :size="13" />
         </button>
       </div>
       <div class="text-[11px] font-medium text-[#41587f]/80 font-mono">

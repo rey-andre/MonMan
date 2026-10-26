@@ -34,7 +34,7 @@
         aria-label="Toggle Sembunyikan Nilai"
       >
         <DynamicIcon 
-          :name="store.isPrivacyMode ? 'EyeOff' : 'Eye'" 
+          :name="store.isPrivacyMode ? 'EyeClosed' : 'Eye'" 
           :size="15" 
           :class="store.isPrivacyMode ? 'text-amber-500 dark:text-amber-400' : 'text-[#41587f]'"
         />

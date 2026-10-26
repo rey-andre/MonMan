@@ -68,7 +68,7 @@
       <div class="mb-3.5 p-3 rounded-2xl bg-white/40 border border-white/60 flex items-center justify-between">
         <div class="flex items-center gap-2.5">
           <div class="w-8 h-8 rounded-xl glass flex items-center justify-center text-[#41587f]">
-            <DynamicIcon :name="financeStore.isPrivacyMode ? 'EyeOff' : 'Eye'" :size="16" />
+            <DynamicIcon :name="financeStore.isPrivacyMode ? 'EyeClosed' : 'Eye'" :size="16" />
           </div>
           <div>
             <div class="text-xs font-semibold text-[#0f2547]">Sembunyikan Saldo</div>

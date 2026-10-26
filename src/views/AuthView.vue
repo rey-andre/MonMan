@@ -132,7 +132,7 @@
               class="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#41587f] hover:text-[#0f2547]"
               tabindex="-1"
             >
-              <DynamicIcon :name="showPassword ? 'EyeOff' : 'Eye'" :size="15" />
+              <DynamicIcon :name="showPassword ? 'Eye' : 'EyeClosed'" :size="15" />
             </button>
           </div>
         </div>

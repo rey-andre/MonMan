@@ -61,6 +61,7 @@ import {
   Mail,
   Eye,
   EyeOff,
+  EyeClosed,
   CreditCard
 } from 'lucide-vue-next'
 
@@ -139,6 +140,7 @@ const iconMap = {
   Mail,
   Eye,
   EyeOff,
+  EyeClosed,
   CreditCard
 }
 
