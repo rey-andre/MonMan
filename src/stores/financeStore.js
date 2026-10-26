@@ -49,6 +49,7 @@ const DEFAULT_CATEGORIES = [
   { id: 'cat-exp-5', name: 'Hiburan & Hobi', type: 'EXPENSE', icon: 'Gamepad2', color: '#f59e0b' },
   { id: 'cat-exp-6', name: 'Kesehatan', type: 'EXPENSE', icon: 'HeartPulse', color: '#ef4444' },
   { id: 'cat-exp-7', name: 'Lainnya', type: 'EXPENSE', icon: 'MoreHorizontal', color: '#64748b' },
+  { id: 'cat-exp-8', name: 'Investasi & Portofolio', type: 'EXPENSE', icon: 'TrendingUp', color: '#10b981' },
 
   // INCOMES
   { id: 'cat-inc-1', name: 'Gaji Bulanan', type: 'INCOME', icon: 'Briefcase', color: '#10b981' },
@@ -1022,10 +1023,11 @@ export const useFinanceStore = defineStore('finance', {
         pricePerCoin: effectivePrice,
         sourceWalletId: sourceWalletId || null,
         notes: notes || '',
-        transactionDate: transactionDate || new Date().toISOString().split('T')[0]
+        transactionDate: transactionDate || new Date().toISOString().split('T')[0],
+        linkedTxId: null
       }
 
-      // 1. Adjust Crypto Asset Balance
+      // 1. Validation: check coin holding for sell/transfer and fiat balance for buy
       let asset = this.cryptoAssets.find(c => c.symbol.toUpperCase() === cleanSymbol)
       if (newCtx.type === 'SELL' || newCtx.type === 'TRANSFER_OUT') {
         const curAmt = asset ? (Number(asset.amount) || 0) : 0
@@ -1035,6 +1037,20 @@ export const useFinanceStore = defineStore('finance', {
         }
       }
 
+      let srcWallet = null
+      let fiatInIdr = 0
+      if (sourceWalletId && (newCtx.type === 'BUY' || newCtx.type === 'SELL')) {
+        srcWallet = this.wallets.find(w => w.id === sourceWalletId)
+        if (srcWallet) {
+          fiatInIdr = newCtx.fiatCurrency === 'USD' ? Math.round(parsedFiat * this.usdToIdrRate) : parsedFiat
+          if (newCtx.type === 'BUY' && (Number(srcWallet.balance) || 0) < fiatInIdr) {
+            console.warn(`[Crypto Transaction] Saldo dompet ${srcWallet.name} tidak mencukupi (${srcWallet.balance} < ${fiatInIdr})`)
+            return false
+          }
+        }
+      }
+
+      // 2. Adjust Crypto Asset Balance
       if (asset) {
         if (newCtx.type === 'BUY' || newCtx.type === 'TRANSFER_IN') {
           asset.amount = Number(((Number(asset.amount) || 0) + parsedAmount).toFixed(10))
@@ -1052,28 +1068,43 @@ export const useFinanceStore = defineStore('finance', {
         this.cryptoAssets.push(asset)
       }
 
-      // 2. Adjust Source Wallet Balance if wallet selected
-      let srcWallet = null
-      if (sourceWalletId) {
-        srcWallet = this.wallets.find(w => w.id === sourceWalletId)
-        if (srcWallet) {
-          let fiatInIdr = parsedFiat
-          if (newCtx.fiatCurrency === 'USD') {
-            fiatInIdr = parsedFiat * this.usdToIdrRate
+      // 3. Adjust Source Wallet Balance and record fiat mutation if wallet selected
+      if (srcWallet && (newCtx.type === 'BUY' || newCtx.type === 'SELL')) {
+        const isBuy = newCtx.type === 'BUY'
+        let categoryId = null
+        if (isBuy) {
+          let cat = this.categories.find(c => c.type === 'EXPENSE' && (c.id === 'cat-exp-8' || c.name.toLowerCase().includes('investasi')))
+          if (!cat) {
+            cat = { id: 'cat-exp-8', name: 'Investasi & Portofolio', type: 'EXPENSE', icon: 'TrendingUp', color: '#10b981' }
+            this.categories.push(cat)
           }
+          categoryId = cat.id
+        } else {
+          const cat = this.categories.find(c => c.type === 'INCOME' && c.name.toLowerCase().includes('investasi'))
+          categoryId = cat ? cat.id : 'cat-inc-3'
+        }
 
-          if (newCtx.type === 'BUY') {
-            srcWallet.balance = Math.max(0, (Number(srcWallet.balance) || 0) - fiatInIdr)
-          } else if (newCtx.type === 'SELL') {
-            srcWallet.balance = (Number(srcWallet.balance) || 0) + fiatInIdr
-          }
+        const actionLabel = isBuy ? 'Beli' : 'Jual'
+        const txDesc = `${actionLabel} ${cleanSymbol} (${parsedAmount} ${cleanSymbol})`
+        const txNotes = notes ? `${txDesc} - ${notes}` : txDesc
+
+        const fiatTx = await this.addTransaction({
+          type: isBuy ? 'EXPENSE' : 'INCOME',
+          amount: fiatInIdr,
+          sourceWalletId: sourceWalletId,
+          categoryId: categoryId,
+          notes: txNotes,
+          date: newCtx.transactionDate
+        })
+        if (fiatTx) {
+          newCtx.linkedTxId = fiatTx.id
         }
       }
 
       this.cryptoTransactions.unshift(newCtx)
       this.saveToStorage()
 
-      // 3. Sync to Supabase if authenticated
+      // 4. Sync to Supabase if authenticated
       if (supabase) {
         try {
           const { data: { session } } = await supabase.auth.getSession()
@@ -1115,11 +1146,6 @@ export const useFinanceStore = defineStore('finance', {
                 this.saveToStorage()
               }
             }
-
-            // Update wallet balance in Supabase
-            if (srcWallet && !srcWallet.id.startsWith('w-')) {
-              await supabase.from('wallets').update({ balance: srcWallet.balance }).eq('id', srcWallet.id)
-            }
           }
         } catch (err) {
           console.error('Error syncing crypto transaction to Supabase:', err)
@@ -1149,10 +1175,11 @@ export const useFinanceStore = defineStore('finance', {
         }
       }
 
-      // Rollback source wallet
-      let srcWallet = null
-      if (ctx.sourceWalletId) {
-        srcWallet = this.wallets.find(w => w.id === ctx.sourceWalletId)
+      // Rollback source wallet / linked fiat transaction
+      if (ctx.linkedTxId) {
+        await this.deleteTransaction(ctx.linkedTxId)
+      } else if (ctx.sourceWalletId) {
+        let srcWallet = this.wallets.find(w => w.id === ctx.sourceWalletId)
         if (srcWallet) {
           let fiatInIdr = fiatAmount
           if (ctx.fiatCurrency === 'USD') fiatInIdr = fiatAmount * this.usdToIdrRate
@@ -1161,6 +1188,13 @@ export const useFinanceStore = defineStore('finance', {
             srcWallet.balance = (Number(srcWallet.balance) || 0) + fiatInIdr
           } else if (ctx.type === 'SELL') {
             srcWallet.balance = Math.max(0, (Number(srcWallet.balance) || 0) - fiatInIdr)
+          }
+          if (supabase && !srcWallet.id.startsWith('w-')) {
+            try {
+              await supabase.from('wallets').update({ balance: srcWallet.balance }).eq('id', srcWallet.id)
+            } catch (e) {
+              console.error('Supabase wallet update error:', e)
+            }
           }
         }
       }
@@ -1177,9 +1211,6 @@ export const useFinanceStore = defineStore('finance', {
               amount: asset.amount,
               updated_at: new Date().toISOString()
             }).eq('id', asset.id)
-          }
-          if (srcWallet && !srcWallet.id.startsWith('w-')) {
-            await supabase.from('wallets').update({ balance: srcWallet.balance }).eq('id', srcWallet.id)
           }
         } catch (e) {
           console.error('Supabase crypto transaction delete error:', e)

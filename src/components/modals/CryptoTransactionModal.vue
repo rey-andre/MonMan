@@ -192,6 +192,9 @@
               {{ w.name }} (Saldo: {{ store.formatMoney(w.balance) }})
             </option>
           </select>
+          <p v-if="isInsufficientFiat" class="text-[11px] text-red-500 font-medium mt-1">
+            Saldo {{ selectedWallet?.name }} tidak mencukupi untuk pembelian ini (Dibutuhkan: {{ store.formatMoney(fiatCostInIdr) }})
+          </p>
         </div>
 
         <!-- Tanggal Transaksi -->
@@ -308,6 +311,25 @@ const currentHolding = computed(() => {
   return found ? (Number(found.amount) || 0) : 0
 })
 
+const selectedWallet = computed(() => {
+  return store.wallets.find(w => w.id === form.sourceWalletId)
+})
+
+const fiatCostInIdr = computed(() => {
+  const fiat = Number(form.fiatAmount) || 0
+  if (form.fiatCurrency === 'USD') {
+    return Math.round(fiat * store.usdToIdrRate)
+  }
+  return fiat
+})
+
+const isInsufficientFiat = computed(() => {
+  if (form.type === 'BUY' && form.sourceWalletId && selectedWallet.value) {
+    return fiatCostInIdr.value > (Number(selectedWallet.value.balance) || 0)
+  }
+  return false
+})
+
 const isInsufficientCrypto = computed(() => {
   if (form.type === 'SELL' || form.type === 'TRANSFER_OUT') {
     const amt = Number(form.amount) || 0
@@ -329,6 +351,7 @@ const isValid = computed(() => {
   if (form.type === 'SELL' || form.type === 'TRANSFER_OUT') {
     return (Number(form.amount) || 0) <= currentHolding.value
   }
+  if (isInsufficientFiat.value) return false
   return true
 })
 
