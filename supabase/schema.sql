@@ -85,6 +85,7 @@ create table if not exists public.crypto_transactions (
   amount numeric(20, 10) not null check (amount > 0),
   fiat_currency text not null default 'IDR' check (fiat_currency in ('IDR', 'USD')),
   fiat_amount numeric(15, 2) not null default 0,
+  exchange_rate numeric(15, 2) default 16250,
   price_per_coin numeric(20, 2) not null default 0,
   source_wallet_id uuid references public.wallets(id) on delete set null,
   notes text,

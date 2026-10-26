@@ -89,6 +89,7 @@ const DEFAULT_CRYPTO_TRANSACTIONS = [
     amount: 0.0042500000,
     fiatCurrency: 'USD',
     fiatAmount: 276.25,
+    exchangeRate: 16250,
     pricePerCoin: 65000,
     sourceWalletId: 'w-1',
     notes: 'Cicil Bitcoin bulanan DCA',
@@ -101,6 +102,7 @@ const DEFAULT_CRYPTO_TRANSACTIONS = [
     amount: 0.0850000000,
     fiatCurrency: 'USD',
     fiatAmount: 178.50,
+    exchangeRate: 16250,
     pricePerCoin: 2100,
     sourceWalletId: 'w-1',
     notes: 'Akumulasi Ethereum DCA',
@@ -113,6 +115,7 @@ const DEFAULT_CRYPTO_TRANSACTIONS = [
     amount: 1.4500000000,
     fiatCurrency: 'USD',
     fiatAmount: 123.25,
+    exchangeRate: 16250,
     pricePerCoin: 85,
     sourceWalletId: 'w-3',
     notes: 'Beli Solana di GoPay',
@@ -263,7 +266,8 @@ export const useFinanceStore = defineStore('finance', {
           const txAmount = Number(t.amount) || 0
           let fiatIdr = Number(t.fiatAmount) || 0
           if (t.fiatCurrency === 'USD') {
-            fiatIdr *= state.usdToIdrRate
+            const historicalRate = Number(t.exchangeRate) || Number(t.usdToIdrRate) || state.usdToIdrRate || 16250
+            fiatIdr *= historicalRate
           }
 
           if (t.type === 'BUY' || t.type === 'TRANSFER_IN') {
@@ -600,6 +604,7 @@ export const useFinanceStore = defineStore('finance', {
             amount: Number(c.amount) || 0,
             fiatCurrency: c.fiat_currency || 'IDR',
             fiatAmount: Number(c.fiat_amount) || 0,
+            exchangeRate: Number(c.exchange_rate) || this.usdToIdrRate || 16250,
             pricePerCoin: Number(c.price_per_coin) || 0,
             sourceWalletId: c.source_wallet_id,
             notes: c.notes || '',
@@ -1016,6 +1021,7 @@ export const useFinanceStore = defineStore('finance', {
         ? Number(pricePerCoin) 
         : (parsedAmount > 0 ? (parsedFiat / parsedAmount) : 0)
 
+      const currentRate = this.usdToIdrRate || 16250
       const tempId = `ctx-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`
       const newCtx = {
         id: tempId,
@@ -1024,6 +1030,7 @@ export const useFinanceStore = defineStore('finance', {
         amount: parsedAmount,
         fiatCurrency: fiatCurrency || 'IDR',
         fiatAmount: parsedFiat,
+        exchangeRate: currentRate,
         pricePerCoin: effectivePrice,
         sourceWalletId: sourceWalletId || null,
         notes: notes || '',
@@ -1046,7 +1053,7 @@ export const useFinanceStore = defineStore('finance', {
       if (sourceWalletId && (newCtx.type === 'BUY' || newCtx.type === 'SELL')) {
         srcWallet = this.wallets.find(w => w.id === sourceWalletId)
         if (srcWallet) {
-          fiatInIdr = newCtx.fiatCurrency === 'USD' ? Math.round(parsedFiat * this.usdToIdrRate) : parsedFiat
+          fiatInIdr = newCtx.fiatCurrency === 'USD' ? Math.round(parsedFiat * currentRate) : parsedFiat
           if (newCtx.type === 'BUY' && (Number(srcWallet.balance) || 0) < fiatInIdr) {
             console.warn(`[Crypto Transaction] Saldo dompet ${srcWallet.name} tidak mencukupi (${srcWallet.balance} < ${fiatInIdr})`)
             return false
@@ -1114,18 +1121,25 @@ export const useFinanceStore = defineStore('finance', {
           const { data: { session } } = await supabase.auth.getSession()
           if (session?.user) {
             // Insert crypto_transaction
-            const { data: insertedCtx } = await supabase.from('crypto_transactions').insert({
+            const payload = {
               user_id: session.user.id,
               symbol: cleanSymbol,
               type: newCtx.type,
               amount: parsedAmount,
               fiat_currency: newCtx.fiatCurrency,
               fiat_amount: parsedFiat,
+              exchange_rate: currentRate,
               price_per_coin: effectivePrice,
               source_wallet_id: sourceWalletId && !sourceWalletId.startsWith('w-') ? sourceWalletId : null,
               notes: newCtx.notes,
               transaction_date: newCtx.transactionDate
-            }).select().single()
+            }
+            let { data: insertedCtx, error: insErr } = await supabase.from('crypto_transactions').insert(payload).select().single()
+            if (insErr && insErr.message?.includes('exchange_rate')) {
+              delete payload.exchange_rate
+              const retryRes = await supabase.from('crypto_transactions').insert(payload).select().single()
+              insertedCtx = retryRes.data
+            }
 
             if (insertedCtx?.id) {
               newCtx.id = insertedCtx.id
@@ -1186,7 +1200,8 @@ export const useFinanceStore = defineStore('finance', {
         let srcWallet = this.wallets.find(w => w.id === ctx.sourceWalletId)
         if (srcWallet) {
           let fiatInIdr = fiatAmount
-          if (ctx.fiatCurrency === 'USD') fiatInIdr = fiatAmount * this.usdToIdrRate
+          const rate = Number(ctx.exchangeRate) || this.usdToIdrRate || 16250
+          if (ctx.fiatCurrency === 'USD') fiatInIdr = Math.round(fiatAmount * rate)
 
           if (ctx.type === 'BUY') {
             srcWallet.balance = (Number(srcWallet.balance) || 0) + fiatInIdr
