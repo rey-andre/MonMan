@@ -7,14 +7,30 @@
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>MonMan: Finance & Crypto Tracker</title>
   <meta name="description" content="Personal Finance & Crypto Tracker dengan liquid glass UI mobile-first">
+  <meta name="theme-color" content="#cfe3ff">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    (function () {
+      try {
+        var stored = localStorage.getItem('monman_theme');
+        var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var isDark = stored === 'dark' || (!stored && prefersDark) || (stored === 'system' && prefersDark);
+        if (isDark) {
+          document.documentElement.classList.add('dark');
+          document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      } catch (e) {}
+    })();
+  </script>
 </head>
 
-<body
-  class="bg-gradient-to-br from-[#dcebff] via-[#f4f9ff] to-[#ffeede] text-[#0f2547] min-h-screen flex justify-center items-center antialiased">
+<body class="min-h-screen flex justify-center items-center antialiased">
   <div id="app" class="w-full h-full flex justify-center items-center"></div>
   <script type="module" src="/src/main.js"></script>
 </body>

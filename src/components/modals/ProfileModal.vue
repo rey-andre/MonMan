@@ -64,6 +64,46 @@
         </div>
       </div>
 
+      <!-- Theme Switcher Segmented Control (DESIGN.md 6.4) -->
+      <div class="mb-4">
+        <label class="block text-xs font-semibold text-[#41587f] mb-1.5">Tema Tampilan</label>
+        <div class="grid grid-cols-3 gap-1 p-1 bg-white/40 rounded-2xl border border-white/60">
+          <button
+            type="button"
+            @click="themeStore.setTheme('light')"
+            class="py-2 text-xs font-semibold rounded-xl transition-all flex items-center justify-center gap-1.5 min-h-[38px] cursor-pointer"
+            :class="themeStore.currentTheme === 'light' 
+              ? 'glass-strong text-[#0f2547] shadow-xs' 
+              : 'text-[#41587f] hover:text-[#0f2547]'"
+          >
+            <DynamicIcon name="Sun" :size="14" class="text-amber-500" />
+            <span>Terang</span>
+          </button>
+          <button
+            type="button"
+            @click="themeStore.setTheme('dark')"
+            class="py-2 text-xs font-semibold rounded-xl transition-all flex items-center justify-center gap-1.5 min-h-[38px] cursor-pointer"
+            :class="themeStore.currentTheme === 'dark' 
+              ? 'glass-strong text-[#0f2547] shadow-xs' 
+              : 'text-[#41587f] hover:text-[#0f2547]'"
+          >
+            <DynamicIcon name="Moon" :size="14" class="text-[#5d9dfc]" />
+            <span>Gelap</span>
+          </button>
+          <button
+            type="button"
+            @click="themeStore.setTheme('system')"
+            class="py-2 text-xs font-semibold rounded-xl transition-all flex items-center justify-center gap-1.5 min-h-[38px] cursor-pointer"
+            :class="themeStore.currentTheme === 'system' 
+              ? 'glass-strong text-[#0f2547] shadow-xs' 
+              : 'text-[#41587f] hover:text-[#0f2547]'"
+          >
+            <DynamicIcon name="Laptop" :size="14" />
+            <span>Sistem</span>
+          </button>
+        </div>
+      </div>
+
       <!-- Action Buttons -->
       <div class="space-y-2 mt-5">
         <div v-if="authStore.isAuthenticated" class="space-y-2">
@@ -113,6 +153,7 @@
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { useFinanceStore } from '@/stores/financeStore'
+import { useThemeStore } from '@/stores/themeStore'
 import DynamicIcon from '@/components/DynamicIcon.vue'
 
 const props = defineProps({
@@ -126,6 +167,7 @@ const emit = defineEmits(['close'])
 const router = useRouter()
 const authStore = useAuthStore()
 const financeStore = useFinanceStore()
+const themeStore = useThemeStore()
 
 async function handleManualSync() {
   await financeStore.fetchUserData()

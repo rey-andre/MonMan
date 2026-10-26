@@ -86,6 +86,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useFinanceStore } from '@/stores/financeStore'
 import { useAuthStore } from '@/stores/authStore'
+import { useThemeStore } from '@/stores/themeStore'
 import BottomNav from '@/components/BottomNav.vue'
 import TransactionModal from '@/components/modals/TransactionModal.vue'
 import WalletModal from '@/components/modals/WalletModal.vue'
@@ -97,6 +98,7 @@ import ProfileModal from '@/components/modals/ProfileModal.vue'
 const route = useRoute()
 const store = useFinanceStore()
 const authStore = useAuthStore()
+const themeStore = useThemeStore()
 const scrollContainer = ref(null)
 
 // Modal States
@@ -142,6 +144,7 @@ function openProfileModal() {
 
 // Lifecycle
 onMounted(async () => {
+  themeStore.initTheme()
   await authStore.initAuth()
   await store.refreshMarketRates()
   if (authStore.isAuthenticated) {

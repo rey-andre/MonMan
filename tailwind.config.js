@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: [
     "./index.html",
     "./src/**/*.{vue,js,ts,jsx,tsx}",
@@ -8,16 +9,16 @@ export default {
     extend: {
       colors: {
         ink: {
-          DEFAULT: '#0f2547',
-          muted: '#41587f',
-          light: '#627d9e',
+          DEFAULT: 'var(--ink)',
+          muted: 'var(--ink2)',
+          light: 'var(--ink3)',
         },
         brand: {
-          blue: '#4f8cff',
-          sky: '#a9cdff',
-          mist: '#eaf3ff',
-          orange: '#ff9a4d',
-          peach: '#ffd2ad',
+          blue: 'var(--blue)',
+          sky: 'var(--sky)',
+          mist: 'var(--mist)',
+          orange: 'var(--orange)',
+          peach: 'var(--peach)',
         }
       },
       fontFamily: {

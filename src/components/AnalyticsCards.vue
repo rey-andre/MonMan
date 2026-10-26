@@ -31,10 +31,10 @@
           class="transition-all duration-500 ease-out"
         />
 
-        <text x="60" y="58" text-anchor="middle" font-size="14" font-weight="600" fill="#0f2547" font-family="Outfit,sans-serif">
+        <text x="60" y="58" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink)" font-family="Outfit,sans-serif">
           {{ formatShortIdr(store.totalMonthlyExpense) }}
         </text>
-        <text x="60" y="73" text-anchor="middle" font-size="9.5" fill="#41587f" font-family="Outfit,sans-serif">
+        <text x="60" y="73" text-anchor="middle" font-size="9.5" fill="var(--ink2)" font-family="Outfit,sans-serif">
           target 5 Jt
         </text>
       </svg>

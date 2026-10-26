@@ -7,7 +7,7 @@
     >
       <div 
         class="w-10 h-10 mx-auto mb-1.5 rounded-full flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform"
-        style="background: linear-gradient(145deg, #ffffff, var(--sky));"
+        style="background: linear-gradient(145deg, var(--white), var(--sky));"
       >
         <DynamicIcon name="ArrowLeftRight" :size="18" class="text-[#0f2547]" />
       </div>
@@ -21,7 +21,7 @@
     >
       <div 
         class="w-10 h-10 mx-auto mb-1.5 rounded-full flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform"
-        style="background: linear-gradient(145deg, #ffffff, var(--peach));"
+        style="background: linear-gradient(145deg, var(--white), var(--peach));"
       >
         <DynamicIcon name="Landmark" :size="18" class="text-[#0f2547]" />
       </div>
@@ -35,7 +35,7 @@
     >
       <div 
         class="w-10 h-10 mx-auto mb-1.5 rounded-full flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform"
-        style="background: linear-gradient(145deg, #ffffff, #cbf3f0);"
+        style="background: linear-gradient(145deg, var(--white), #cbf3f0);"
       >
         <DynamicIcon name="Coins" :size="18" class="text-[#0f2547]" />
       </div>
@@ -51,7 +51,7 @@
       <div 
         class="w-10 h-10 mx-auto mb-1.5 rounded-full flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform"
         :class="{ 'animate-spin': store.isSyncingRates }"
-        style="background: linear-gradient(145deg, #ffffff, #ffd6e0);"
+        style="background: linear-gradient(145deg, var(--white), #ffd6e0);"
       >
         <DynamicIcon name="RefreshCw" :size="18" class="text-[#0f2547]" />
       </div>

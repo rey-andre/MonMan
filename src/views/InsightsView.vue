@@ -92,10 +92,10 @@
           class="transition-all duration-500 ease-out"
         />
 
-        <text x="60" y="58" text-anchor="middle" font-size="15" font-weight="600" fill="#0f2547" font-family="Outfit,sans-serif">
+        <text x="60" y="58" text-anchor="middle" font-size="15" font-weight="600" fill="var(--ink)" font-family="Outfit,sans-serif">
           {{ formatShortIdr(store.totalMonthlyExpense) }}
         </text>
-        <text x="60" y="74" text-anchor="middle" font-size="10" fill="#41587f" font-family="Outfit,sans-serif">
+        <text x="60" y="74" text-anchor="middle" font-size="10" fill="var(--ink2)" font-family="Outfit,sans-serif">
           Bulan Ini
         </text>
       </svg>
