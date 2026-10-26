@@ -31,10 +31,16 @@
         </div>
       </div>
 
-      <div class="glass p-3.5 rounded-[22px]">
-        <div class="flex items-center gap-1.5 text-[12px] font-medium text-[#41587f] mb-0.5">
-          <DynamicIcon name="Coins" :size="14" class="text-[#ff9a4d]" />
-          <span>Total Kripto</span>
+      <router-link
+        to="/crypto"
+        class="glass p-3.5 rounded-[22px] block group hover:bg-white/60 transition-all"
+      >
+        <div class="flex items-center justify-between mb-0.5">
+          <div class="flex items-center gap-1.5 text-[12px] font-medium text-[#41587f]">
+            <DynamicIcon name="Coins" :size="14" class="text-[#ff9a4d]" />
+            <span>Total Kripto</span>
+          </div>
+          <DynamicIcon name="ChevronRight" :size="14" class="text-[#41587f] group-hover:translate-x-0.5 transition-transform" />
         </div>
         <div class="text-[16px] font-semibold text-[#4f8cff] font-mono truncate">
           {{ formatIdr(store.totalCryptoValueIdr) }}
@@ -43,7 +49,7 @@
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
           <span>1 USD = {{ formatIdr(store.usdToIdrRate) }}</span>
         </div>
-      </div>
+      </router-link>
     </div>
 
     <!-- Tab Selector -->
@@ -116,6 +122,22 @@
 
     <!-- TAB 2: PORTOFOLIO KRIPTO (10 DECIMALS PRECISION) -->
     <div v-else class="space-y-2.5">
+      <!-- Link to Dedicated Crypto Page -->
+      <router-link
+        to="/crypto"
+        class="p-3.5 rounded-[22px] glass flex items-center justify-between text-xs text-[#0f2547] hover:bg-white/80 transition-all border border-[#4f8cff]/30 shadow-xs group"
+      >
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600">
+            <DynamicIcon name="TrendingUp" :size="16" />
+          </div>
+          <div>
+            <div class="font-semibold text-[13px] text-[#0f2547]">Halaman Kripto & Investasi</div>
+            <div class="text-[11px] text-[#41587f]">Lihat riwayat beli/jual dan pertumbuhan ROI modal</div>
+          </div>
+        </div>
+        <DynamicIcon name="ChevronRight" :size="16" class="text-[#4f8cff] group-hover:translate-x-1 transition-transform" />
+      </router-link>
       <!-- 10 Decimals Precision Banner -->
       <div class="p-3 rounded-[20px] bg-[rgba(255,154,77,0.15)] border border-[#ff9a4d]/30 flex items-center gap-2 text-xs text-[#0f2547]">
         <DynamicIcon name="ShieldCheck" :size="16" class="text-[#9a4a0c] shrink-0" />

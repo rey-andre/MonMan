@@ -30,6 +30,8 @@ export function formatCrypto(amount, maxDigits = 10) {
   }).format(num)
 }
 
+export const formatCryptoAmount = formatCrypto
+
 /**
  * Format USD currency
  */

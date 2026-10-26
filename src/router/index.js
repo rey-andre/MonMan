@@ -4,6 +4,7 @@ import InsightsView from '@/views/InsightsView.vue'
 import WalletsView from '@/views/WalletsView.vue'
 import TransactionsView from '@/views/TransactionsView.vue'
 import AuthView from '@/views/AuthView.vue'
+import CryptoView from '@/views/CryptoView.vue'
 
 const routes = [
   {
@@ -17,14 +18,19 @@ const routes = [
     component: AuthView
   },
   {
-    path: '/insights',
-    name: 'insights',
-    component: InsightsView
-  },
-  {
     path: '/wallets',
     name: 'wallets',
     component: WalletsView
+  },
+  {
+    path: '/crypto',
+    name: 'crypto',
+    component: CryptoView
+  },
+  {
+    path: '/insights',
+    name: 'insights',
+    component: InsightsView
   },
   {
     path: '/transactions',

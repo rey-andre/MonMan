@@ -46,9 +46,10 @@ const route = useRoute()
 
 const navItems = [
   { path: '/', label: 'Beranda', icon: 'Home' },
+  { path: '/wallets', label: 'Dompet', icon: 'Landmark' },
+  { path: '/crypto', label: 'Kripto', icon: 'Coins' },
   { path: '/insights', label: 'Analisis', icon: 'PieChart' },
-  { path: '/wallets', label: 'Dompet & Kripto', icon: 'Wallet' },
-  { path: '/transactions', label: 'Riwayat Mutasi', icon: 'History' }
+  { path: '/transactions', label: 'Mutasi', icon: 'History' }
 ]
 
 function isActive(path) {
@@ -104,9 +105,9 @@ function isActive(path) {
 /* Base Nav Tab Item */
 .nav-tab {
   position: relative;
-  width: 58px;
-  height: 48px;
-  border-radius: 22px;
+  width: 52px;
+  height: 46px;
+  border-radius: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;

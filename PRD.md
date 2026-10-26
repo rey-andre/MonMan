@@ -75,6 +75,28 @@ Agar proses pembuatan kode oleh AI Agent berjalan rapi dan terukur, pengerjaan d
   - Menampilkan simbol & nama koin, jumlah unit koin hingga 10 desimal, harga pasar koin saat ini dalam USD, nilai tukar USD-IDR yang digunakan, serta nilai ekuivalen aset tersebut dalam Rupiah (IDR).
   - Menyediakan tombol **Refresh Harga** untuk memperbarui nilai pasar sewaktu-waktu.
 
+### 4.5. Dedicated Crypto Page & Mutasi Beli/Jual Kripto (Pertumbuhan Investasi)
+- **Halaman Khusus Kripto (`/crypto`):**
+  - Halaman mandiri yang dapat diakses langsung dari bilah navigasi utama untuk memantau portofolio kripto dan pertumbuhan investasi secara mendalam.
+- **Pencatatan Mutasi Kripto (Buy / Sell / Transfer):**
+  - Setiap pembelian atau penjualan koin dicatat dengan detail:
+    - `type`: `BUY` (Beli), `SELL` (Jual), `TRANSFER_IN` (Terima Koin), `TRANSFER_OUT` (Kirim Koin).
+    - `symbol`: Simbol koin yang ditransaksikan (contoh: BTC).
+    - `amount`: Jumlah koin (presisi hingga 10 angka desimal).
+    - `fiat_currency`: Pilihan mata uang fiat yang digunakan untuk membeli/menjual (`IDR` atau `USD`).
+    - `fiat_amount`: Nilai modal/dana fiat yang diinvestasikan pada transaksi tersebut.
+    - `price_per_coin`: Harga beli/jual efektif per 1 koin (otomatis terhitung `fiat_amount / amount` atau dapat disesuaikan).
+    - `source_wallet_id`: Opsi pemotongan otomatis dari dompet fiat (misal potong saldo BCA/GoPay saat beli koin).
+    - `transaction_date`: Tanggal transaksi.
+    - `notes`: Catatan transaksi.
+- **Kalkulasi & Metrik Pertumbuhan Investasi (ROI & PnL):**
+  - **Total Modal Terinvestasi (*Total Cost Basis*):** Akumulasi seluruh dana fiat (dalam IDR) yang telah dibelanjakan untuk membeli koin.
+  - **Nilai Portofolio Terkini (*Current Value*):** `Total Koin * Harga Pasar Terkini * Kurs IDR`.
+  - **Keuntungan / Kerugian (*Unrealized Profit & Loss*):** `Nilai Portofolio Terkini − Total Modal Terinvestasi`. Ditampilkan dalam nominal Rupiah (`+Rp ...` / `−Rp ...`).
+  - **Persentase Pertumbuhan (*Return on Investment / ROI %*):** `((Nilai Terkini − Modal) / Modal) * 100%`.
+  - **Harga Beli Rata-Rata (*Average Buy Price*):** Menampilkan rata-rata harga beli per koin (dalam USD & IDR) untuk membandingkannya secara langsung dengan harga pasar saat ini (*Break Even Point*).
+  - **Riwayat Mutasi Per Koin:** Pengguna dapat memfilter dan melihat histori riwayat beli/jual untuk tiap koin secara terpisah.
+
 ---
 
 ## 5. Database Schema Design (Supabase PostgreSQL)
@@ -119,10 +141,40 @@ create table public.transactions (
 -- Menggunakan numeric(20, 10) agar sanggup menyimpan hingga 10 digit di belakang koma secara akurat
 create table public.crypto_assets (
   id uuid default gen_random_uuid() primary key,
-  user_id uuid references auth.users(id) on delete cascade,
+  user_id uuid references auth.users(id) on delete cascade default auth.uid() not null,
   symbol text not null, -- Contoh: 'BTC', 'ETH'
   name text not null,   -- Contoh: 'Bitcoin'
   amount numeric(20, 10) not null check (amount >= 0),
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- 5. Tabel Crypto Transactions (Mutasi Beli / Jual Kripto & Nilai Fiat Investasi)
+create table public.crypto_transactions (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users(id) on delete cascade default auth.uid() not null,
+  crypto_asset_id uuid references public.crypto_assets(id) on delete cascade,
+  symbol text not null,
+  type text not null check (type in ('BUY', 'SELL', 'TRANSFER_IN', 'TRANSFER_OUT')),
+  amount numeric(20, 10) not null check (amount > 0),
+  fiat_currency text not null default 'IDR' check (fiat_currency in ('IDR', 'USD')),
+  fiat_amount numeric(15, 2) not null default 0,
+  price_per_coin numeric(20, 2) not null default 0,
+  source_wallet_id uuid references public.wallets(id) on delete set null,
+  notes text,
+  transaction_date date default current_date not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- 6. Tabel Debts (Hutang & Piutang)
+create table public.debts (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users(id) on delete cascade default auth.uid() not null,
+  type text not null check (type in ('PIUTANG', 'HUTANG')),
+  person text not null,
+  amount numeric(15, 2) not null check (amount > 0),
+  due_date date,
+  is_paid boolean not null default false,
+  notes text,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );

@@ -22,6 +22,7 @@
         @open-debt="openDebtModal()"
         @edit-debt="openDebtModal"
         @open-profile="openProfileModal"
+        @open-crypto-tx="openCryptoTxModal"
       >
         <transition name="page-fade" mode="out-in">
           <component 
@@ -34,6 +35,7 @@
             @open-debt="openDebtModal()"
             @edit-debt="openDebtModal"
             @open-profile="openProfileModal"
+            @open-crypto-tx="openCryptoTxModal"
           />
         </transition>
       </router-view>
@@ -60,6 +62,12 @@
       @close="isCryptoModalOpen = false"
     />
 
+    <CryptoTransactionModal
+      :is-open="isCryptoTxModalOpen"
+      :default-symbol="selectedCryptoSymbol"
+      @close="isCryptoTxModalOpen = false"
+    />
+
     <DebtModal
       :is-open="isDebtModalOpen"
       :debt-data="selectedDebt"
@@ -82,6 +90,7 @@ import BottomNav from '@/components/BottomNav.vue'
 import TransactionModal from '@/components/modals/TransactionModal.vue'
 import WalletModal from '@/components/modals/WalletModal.vue'
 import CryptoModal from '@/components/modals/CryptoModal.vue'
+import CryptoTransactionModal from '@/components/modals/CryptoTransactionModal.vue'
 import DebtModal from '@/components/modals/DebtModal.vue'
 import ProfileModal from '@/components/modals/ProfileModal.vue'
 
@@ -94,11 +103,13 @@ const scrollContainer = ref(null)
 const isTransactionModalOpen = ref(false)
 const isWalletModalOpen = ref(false)
 const isCryptoModalOpen = ref(false)
+const isCryptoTxModalOpen = ref(false)
 const isDebtModalOpen = ref(false)
 const isProfileModalOpen = ref(false)
 
 const selectedWallet = ref(null)
 const selectedCrypto = ref(null)
+const selectedCryptoSymbol = ref('BTC')
 const selectedDebt = ref(null)
 
 function openTransactionModal() {
@@ -113,6 +124,11 @@ function openWalletModal(wallet = null) {
 function openCryptoModal(crypto = null) {
   selectedCrypto.value = crypto
   isCryptoModalOpen.value = true
+}
+
+function openCryptoTxModal(symbol = 'BTC') {
+  selectedCryptoSymbol.value = symbol || 'BTC'
+  isCryptoTxModalOpen.value = true
 }
 
 function openDebtModal(debt = null) {

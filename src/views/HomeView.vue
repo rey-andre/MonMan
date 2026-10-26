@@ -46,7 +46,7 @@
 
         <!-- Crypto Summary Card -->
         <router-link
-          to="/wallets"
+          to="/crypto"
           class="p-3.5 rounded-[20px] bg-white/40 hover:bg-white/60 border border-white/60 transition-all block group"
         >
           <div class="text-[12px] font-medium text-[#41587f]">Kripto (10 Desimal)</div>

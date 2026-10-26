@@ -75,6 +75,23 @@ create table if not exists public.debts (
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
+-- 7. Tabel Crypto Transactions (Mutasi Beli / Jual Kripto)
+create table if not exists public.crypto_transactions (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users(id) on delete cascade default auth.uid() not null,
+  crypto_asset_id uuid references public.crypto_assets(id) on delete cascade,
+  symbol text not null,
+  type text not null check (type in ('BUY', 'SELL', 'TRANSFER_IN', 'TRANSFER_OUT')),
+  amount numeric(20, 10) not null check (amount > 0),
+  fiat_currency text not null default 'IDR' check (fiat_currency in ('IDR', 'USD')),
+  fiat_amount numeric(15, 2) not null default 0,
+  price_per_coin numeric(20, 2) not null default 0,
+  source_wallet_id uuid references public.wallets(id) on delete set null,
+  notes text,
+  transaction_date date default current_date not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
 -- Row Level Security (RLS)
 alter table public.profiles enable row level security;
 alter table public.wallets enable row level security;
@@ -82,6 +99,7 @@ alter table public.categories enable row level security;
 alter table public.transactions enable row level security;
 alter table public.crypto_assets enable row level security;
 alter table public.debts enable row level security;
+alter table public.crypto_transactions enable row level security;
 
 -- Policies
 create policy "Users can manage own profile" on public.profiles for all using (auth.uid() = id) with check (auth.uid() = id);
@@ -91,3 +109,4 @@ create policy "Users can manage own categories" on public.categories for all usi
 create policy "Users can manage own transactions" on public.transactions for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 create policy "Users can manage own crypto_assets" on public.crypto_assets for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 create policy "Users can manage own debts" on public.debts for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+create policy "Users can manage own crypto_transactions" on public.crypto_transactions for all using (auth.uid() = user_id) with check (auth.uid() = user_id);

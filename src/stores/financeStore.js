@@ -79,6 +79,45 @@ const DEFAULT_CRYPTO = [
   }
 ]
 
+const DEFAULT_CRYPTO_TRANSACTIONS = [
+  {
+    id: 'ctx-1',
+    symbol: 'BTC',
+    type: 'BUY',
+    amount: 0.0042500000,
+    fiatCurrency: 'USD',
+    fiatAmount: 276.25,
+    pricePerCoin: 65000,
+    sourceWalletId: 'w-1',
+    notes: 'Cicil Bitcoin bulanan DCA',
+    transactionDate: '2026-09-15'
+  },
+  {
+    id: 'ctx-2',
+    symbol: 'ETH',
+    type: 'BUY',
+    amount: 0.0850000000,
+    fiatCurrency: 'USD',
+    fiatAmount: 178.50,
+    pricePerCoin: 2100,
+    sourceWalletId: 'w-1',
+    notes: 'Akumulasi Ethereum DCA',
+    transactionDate: '2026-09-20'
+  },
+  {
+    id: 'ctx-3',
+    symbol: 'SOL',
+    type: 'BUY',
+    amount: 1.4500000000,
+    fiatCurrency: 'USD',
+    fiatAmount: 123.25,
+    pricePerCoin: 85,
+    sourceWalletId: 'w-3',
+    notes: 'Beli Solana di GoPay',
+    transactionDate: '2026-10-05'
+  }
+]
+
 const DEFAULT_TRANSACTIONS = [
   {
     id: 'tx-1',
@@ -171,6 +210,7 @@ export const useFinanceStore = defineStore('finance', {
     return {
       wallets: parsed?.wallets || DEFAULT_WALLETS,
       cryptoAssets: parsed?.cryptoAssets || DEFAULT_CRYPTO,
+      cryptoTransactions: parsed?.cryptoTransactions || DEFAULT_CRYPTO_TRANSACTIONS,
       categories: parsed?.categories || DEFAULT_CATEGORIES,
       transactions: parsed?.transactions || DEFAULT_TRANSACTIONS,
       debts: parsed?.debts || DEFAULT_DEBTS,
@@ -198,7 +238,7 @@ export const useFinanceStore = defineStore('finance', {
       return state.wallets.reduce((acc, w) => acc + (Number(w.balance) || 0), 0)
     },
 
-    // Crypto assets list augmented with live USD and IDR values
+    // Crypto assets list augmented with live USD and IDR values & Investment PnL
     cryptoListWithValues(state) {
       return state.cryptoAssets.map(asset => {
         const sym = (asset.symbol || '').toUpperCase()
@@ -208,11 +248,45 @@ export const useFinanceStore = defineStore('finance', {
         const valueUsd = amount * priceUsd
         const valueIdr = valueUsd * state.usdToIdrRate
 
+        // Calculate Cost Basis & PnL from crypto transactions
+        const coinTxs = state.cryptoTransactions.filter(t => (t.symbol || '').toUpperCase() === sym)
+        let totalInvestedIdr = 0
+
+        coinTxs.forEach(t => {
+          let fiatIdr = Number(t.fiatAmount) || 0
+          if (t.fiatCurrency === 'USD') {
+            fiatIdr *= state.usdToIdrRate
+          }
+
+          if (t.type === 'BUY' || t.type === 'TRANSFER_IN') {
+            totalInvestedIdr += fiatIdr
+          } else if (t.type === 'SELL') {
+            totalInvestedIdr = Math.max(0, totalInvestedIdr - fiatIdr)
+          }
+        })
+
+        const totalInvestedUsd = state.usdToIdrRate > 0 ? (totalInvestedIdr / state.usdToIdrRate) : 0
+        const avgBuyPriceUsd = amount > 0 && totalInvestedUsd > 0 ? (totalInvestedUsd / amount) : 0
+        const avgBuyPriceIdr = avgBuyPriceUsd * state.usdToIdrRate
+        const unrealizedPnlIdr = valueIdr - totalInvestedIdr
+        const unrealizedPnlUsd = valueUsd - totalInvestedUsd
+        const roiPercentage = totalInvestedIdr > 0 
+          ? Math.round(((valueIdr - totalInvestedIdr) / totalInvestedIdr) * 1000) / 10 
+          : 0
+
         return {
           ...asset,
           priceUsd,
+          priceIdr: priceUsd * state.usdToIdrRate,
           valueUsd,
           valueIdr,
+          totalInvestedIdr,
+          totalInvestedUsd,
+          avgBuyPriceUsd,
+          avgBuyPriceIdr,
+          unrealizedPnlIdr,
+          unrealizedPnlUsd,
+          roiPercentage,
           usdToIdrRate: state.usdToIdrRate,
           change24h: meta.change24h !== undefined ? meta.change24h : 0,
           highest: meta.highest,
@@ -225,6 +299,33 @@ export const useFinanceStore = defineStore('finance', {
     // Total Crypto Portfolio Value in IDR
     totalCryptoValueIdr(state) {
       return this.cryptoListWithValues.reduce((acc, c) => acc + (c.valueIdr || 0), 0)
+    },
+
+    // Total Fiat Capital Invested into Crypto in IDR
+    totalCryptoInvestedIdr() {
+      return this.cryptoListWithValues.reduce((acc, c) => acc + (c.totalInvestedIdr || 0), 0)
+    },
+
+    // Total Overall Crypto Unrealized Profit/Loss in IDR
+    totalCryptoPnlIdr() {
+      return this.totalCryptoValueIdr - this.totalCryptoInvestedIdr
+    },
+
+    // Total Overall Crypto ROI %
+    totalCryptoRoiPercentage() {
+      if (this.totalCryptoInvestedIdr <= 0) return 0
+      return Math.round(((this.totalCryptoValueIdr - this.totalCryptoInvestedIdr) / this.totalCryptoInvestedIdr) * 1000) / 10
+    },
+
+    // Sorted recent crypto mutations
+    recentCryptoTransactions(state) {
+      return [...state.cryptoTransactions].sort((a, b) => new Date(b.transactionDate) - new Date(a.transactionDate)).map(ctx => {
+        const wallet = state.wallets.find(w => w.id === ctx.sourceWalletId)
+        return {
+          ...ctx,
+          sourceWallet: wallet
+        }
+      })
     },
 
     // Grand Total Net Worth (Fiat + Crypto) in IDR
@@ -329,6 +430,7 @@ export const useFinanceStore = defineStore('finance', {
       const data = {
         wallets: this.wallets,
         cryptoAssets: this.cryptoAssets,
+        cryptoTransactions: this.cryptoTransactions,
         categories: this.categories,
         transactions: this.transactions,
         debts: this.debts
@@ -430,6 +532,28 @@ export const useFinanceStore = defineStore('finance', {
             isPaid: Boolean(d.is_paid),
             notes: d.notes || '',
             createdAt: d.created_at
+          }))
+        }
+
+        // 6. Crypto Transactions (Mutasi Beli / Jual Kripto)
+        const { data: ctxData, error: ctxErr } = await supabase
+          .from('crypto_transactions')
+          .select('*')
+          .order('transaction_date', { ascending: false })
+          .order('created_at', { ascending: false })
+
+        if (!ctxErr && ctxData && ctxData.length > 0) {
+          this.cryptoTransactions = ctxData.map(c => ({
+            id: c.id,
+            symbol: c.symbol,
+            type: c.type,
+            amount: Number(c.amount) || 0,
+            fiatCurrency: c.fiat_currency || 'IDR',
+            fiatAmount: Number(c.fiat_amount) || 0,
+            pricePerCoin: Number(c.price_per_coin) || 0,
+            sourceWalletId: c.source_wallet_id,
+            notes: c.notes || '',
+            transactionDate: c.transaction_date
           }))
         }
 
@@ -818,6 +942,185 @@ export const useFinanceStore = defineStore('finance', {
 
         if (supabase && !debtId.startsWith('d-')) {
           await supabase.from('debts').update({ is_paid: debt.isPaid }).eq('id', debtId)
+        }
+      }
+    },
+
+    // Record Crypto Mutation (BUY, SELL, TRANSFER) with Fiat Investment Tracking
+    async addCryptoTransaction({ symbol, type, amount, fiatCurrency, fiatAmount, pricePerCoin, sourceWalletId, notes, transactionDate }) {
+      const cleanSymbol = (symbol || '').trim().toUpperCase()
+      const parsedAmount = Number(amount) || 0
+      const parsedFiat = Number(fiatAmount) || 0
+      if (!cleanSymbol || parsedAmount <= 0) return false
+
+      const effectivePrice = Number(pricePerCoin) > 0 
+        ? Number(pricePerCoin) 
+        : (parsedAmount > 0 ? (parsedFiat / parsedAmount) : 0)
+
+      const tempId = `ctx-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`
+      const newCtx = {
+        id: tempId,
+        symbol: cleanSymbol,
+        type: type || 'BUY',
+        amount: parsedAmount,
+        fiatCurrency: fiatCurrency || 'IDR',
+        fiatAmount: parsedFiat,
+        pricePerCoin: effectivePrice,
+        sourceWalletId: sourceWalletId || null,
+        notes: notes || '',
+        transactionDate: transactionDate || new Date().toISOString().split('T')[0]
+      }
+
+      // 1. Adjust Crypto Asset Balance
+      let asset = this.cryptoAssets.find(c => c.symbol.toUpperCase() === cleanSymbol)
+      if (asset) {
+        if (newCtx.type === 'BUY' || newCtx.type === 'TRANSFER_IN') {
+          asset.amount = (Number(asset.amount) || 0) + parsedAmount
+        } else if (newCtx.type === 'SELL' || newCtx.type === 'TRANSFER_OUT') {
+          asset.amount = Math.max(0, (Number(asset.amount) || 0) - parsedAmount)
+        }
+      } else if (newCtx.type === 'BUY' || newCtx.type === 'TRANSFER_IN') {
+        const coinNames = { BTC: 'Bitcoin', ETH: 'Ethereum', SOL: 'Solana', BNB: 'BNB', DOGE: 'Dogecoin', XRP: 'Ripple', ADA: 'Cardano' }
+        asset = {
+          id: `c-${Date.now()}`,
+          symbol: cleanSymbol,
+          name: coinNames[cleanSymbol] || cleanSymbol,
+          amount: parsedAmount
+        }
+        this.cryptoAssets.push(asset)
+      }
+
+      // 2. Adjust Source Wallet Balance if wallet selected
+      let srcWallet = null
+      if (sourceWalletId) {
+        srcWallet = this.wallets.find(w => w.id === sourceWalletId)
+        if (srcWallet) {
+          let fiatInIdr = parsedFiat
+          if (newCtx.fiatCurrency === 'USD') {
+            fiatInIdr = parsedFiat * this.usdToIdrRate
+          }
+
+          if (newCtx.type === 'BUY') {
+            srcWallet.balance = Math.max(0, (Number(srcWallet.balance) || 0) - fiatInIdr)
+          } else if (newCtx.type === 'SELL') {
+            srcWallet.balance = (Number(srcWallet.balance) || 0) + fiatInIdr
+          }
+        }
+      }
+
+      this.cryptoTransactions.unshift(newCtx)
+      this.saveToStorage()
+
+      // 3. Sync to Supabase if authenticated
+      if (supabase) {
+        try {
+          const { data: { session } } = await supabase.auth.getSession()
+          if (session?.user) {
+            // Insert crypto_transaction
+            const { data: insertedCtx } = await supabase.from('crypto_transactions').insert({
+              user_id: session.user.id,
+              symbol: cleanSymbol,
+              type: newCtx.type,
+              amount: parsedAmount,
+              fiat_currency: newCtx.fiatCurrency,
+              fiat_amount: parsedFiat,
+              price_per_coin: effectivePrice,
+              source_wallet_id: sourceWalletId && !sourceWalletId.startsWith('w-') ? sourceWalletId : null,
+              notes: newCtx.notes,
+              transaction_date: newCtx.transactionDate
+            }).select().single()
+
+            if (insertedCtx?.id) {
+              newCtx.id = insertedCtx.id
+              this.saveToStorage()
+            }
+
+            // Update or insert crypto_assets in Supabase
+            if (asset && !asset.id.startsWith('c-')) {
+              await supabase.from('crypto_assets').update({
+                amount: asset.amount,
+                updated_at: new Date().toISOString()
+              }).eq('id', asset.id)
+            } else if (asset) {
+              const { data: insertedAsset } = await supabase.from('crypto_assets').insert({
+                user_id: session.user.id,
+                symbol: cleanSymbol,
+                name: asset.name,
+                amount: asset.amount
+              }).select().single()
+              if (insertedAsset?.id) {
+                asset.id = insertedAsset.id
+                this.saveToStorage()
+              }
+            }
+
+            // Update wallet balance in Supabase
+            if (srcWallet && !srcWallet.id.startsWith('w-')) {
+              await supabase.from('wallets').update({ balance: srcWallet.balance }).eq('id', srcWallet.id)
+            }
+          }
+        } catch (err) {
+          console.error('Error syncing crypto transaction to Supabase:', err)
+        }
+      }
+
+      this.refreshMarketRates()
+      return newCtx
+    },
+
+    // Delete Crypto Transaction & Rollback balances
+    async deleteCryptoTransaction(ctxId) {
+      const idx = this.cryptoTransactions.findIndex(c => c.id === ctxId)
+      if (idx === -1) return
+
+      const ctx = this.cryptoTransactions[idx]
+      const amount = Number(ctx.amount) || 0
+      const fiatAmount = Number(ctx.fiatAmount) || 0
+
+      // Rollback crypto asset amount
+      const asset = this.cryptoAssets.find(c => c.symbol.toUpperCase() === ctx.symbol.toUpperCase())
+      if (asset) {
+        if (ctx.type === 'BUY' || ctx.type === 'TRANSFER_IN') {
+          asset.amount = Math.max(0, (Number(asset.amount) || 0) - amount)
+        } else if (ctx.type === 'SELL' || ctx.type === 'TRANSFER_OUT') {
+          asset.amount = (Number(asset.amount) || 0) + amount
+        }
+      }
+
+      // Rollback source wallet
+      let srcWallet = null
+      if (ctx.sourceWalletId) {
+        srcWallet = this.wallets.find(w => w.id === ctx.sourceWalletId)
+        if (srcWallet) {
+          let fiatInIdr = fiatAmount
+          if (ctx.fiatCurrency === 'USD') fiatInIdr = fiatAmount * this.usdToIdrRate
+
+          if (ctx.type === 'BUY') {
+            srcWallet.balance = (Number(srcWallet.balance) || 0) + fiatInIdr
+          } else if (ctx.type === 'SELL') {
+            srcWallet.balance = Math.max(0, (Number(srcWallet.balance) || 0) - fiatInIdr)
+          }
+        }
+      }
+
+      this.cryptoTransactions.splice(idx, 1)
+      this.saveToStorage()
+
+      // Sync to Supabase
+      if (supabase && !ctxId.startsWith('ctx-')) {
+        try {
+          await supabase.from('crypto_transactions').delete().eq('id', ctxId)
+          if (asset && !asset.id.startsWith('c-')) {
+            await supabase.from('crypto_assets').update({
+              amount: asset.amount,
+              updated_at: new Date().toISOString()
+            }).eq('id', asset.id)
+          }
+          if (srcWallet && !srcWallet.id.startsWith('w-')) {
+            await supabase.from('wallets').update({ balance: srcWallet.balance }).eq('id', srcWallet.id)
+          }
+        } catch (e) {
+          console.error('Supabase crypto transaction delete error:', e)
         }
       }
     }
