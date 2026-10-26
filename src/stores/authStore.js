@@ -1,11 +1,15 @@
 import { defineStore } from 'pinia'
 import { supabase } from '@/services/supabase'
 
+export const AUTH_CHOICE_KEY = 'monman_auth_choice'
+
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null,
     session: null,
     profile: null,
+    isGuest: localStorage.getItem(AUTH_CHOICE_KEY) === 'guest',
+    isInitialized: false,
     isLoading: false,
     isInitialLoading: true,
     authError: null
@@ -13,6 +17,7 @@ export const useAuthStore = defineStore('auth', {
 
   getters: {
     isAuthenticated: (state) => Boolean(state.user),
+    hasAuthChoice: (state) => Boolean(state.user) || state.isGuest,
     userName: (state) => {
       if (state.profile?.full_name) return state.profile.full_name
       if (state.user?.user_metadata?.full_name) return state.user.user_metadata.full_name
@@ -27,7 +32,15 @@ export const useAuthStore = defineStore('auth', {
   },
 
   actions: {
+    setGuestMode() {
+      this.isGuest = true
+      localStorage.setItem(AUTH_CHOICE_KEY, 'guest')
+    },
+
     async initAuth() {
+      if (this.isInitialized) return
+      this.isInitialized = true
+
       if (!supabase) {
         this.isInitialLoading = false
         return
@@ -41,7 +54,11 @@ export const useAuthStore = defineStore('auth', {
         this.user = session?.user || null
 
         if (this.user) {
+          this.isGuest = false
+          localStorage.setItem(AUTH_CHOICE_KEY, 'authenticated')
           await this.fetchProfile()
+        } else if (localStorage.getItem(AUTH_CHOICE_KEY) === 'authenticated') {
+          localStorage.removeItem(AUTH_CHOICE_KEY)
         }
       } catch (err) {
         console.error('Failed to get initial session:', err)
@@ -55,9 +72,14 @@ export const useAuthStore = defineStore('auth', {
         this.user = session?.user || null
 
         if (this.user) {
+          this.isGuest = false
+          localStorage.setItem(AUTH_CHOICE_KEY, 'authenticated')
           await this.fetchProfile()
         } else {
           this.profile = null
+          if (localStorage.getItem(AUTH_CHOICE_KEY) === 'authenticated') {
+            localStorage.removeItem(AUTH_CHOICE_KEY)
+          }
         }
       })
     },
@@ -116,6 +138,8 @@ export const useAuthStore = defineStore('auth', {
 
         this.session = data.session
         this.user = data.user
+        this.isGuest = false
+        localStorage.setItem(AUTH_CHOICE_KEY, 'authenticated')
         await this.fetchProfile()
         return data
       } catch (err) {
@@ -154,6 +178,8 @@ export const useAuthStore = defineStore('auth', {
 
         this.session = data.session
         this.user = data.user
+        this.isGuest = false
+        localStorage.setItem(AUTH_CHOICE_KEY, 'authenticated')
         if (this.user) {
           await this.fetchProfile()
         }
@@ -174,6 +200,8 @@ export const useAuthStore = defineStore('auth', {
         this.user = null
         this.session = null
         this.profile = null
+        this.isGuest = false
+        localStorage.removeItem(AUTH_CHOICE_KEY)
       } catch (err) {
         console.error('Logout error:', err)
       } finally {

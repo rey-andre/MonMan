@@ -2,13 +2,14 @@
   <div class="min-h-full flex flex-col justify-between py-2">
     <!-- Top Bar with Back Button -->
     <div class="flex items-center justify-between pb-3">
-      <router-link
-        to="/"
+      <button
+        type="button"
+        @click="handleBack"
         class="w-9 h-9 rounded-2xl glass flex items-center justify-center text-[#41587f] hover:text-[#0f2547] active:scale-95 transition-all"
         title="Kembali ke Beranda"
       >
         <DynamicIcon name="ArrowLeft" :size="16" />
-      </router-link>
+      </button>
       <span class="text-xs font-semibold text-[#41587f]">Autentikasi Cloud</span>
       <div class="w-9"></div>
     </div>
@@ -160,13 +161,14 @@
 
       <!-- Guest Fallback -->
       <div class="mt-4 pt-4 border-t border-white/60 text-center">
-        <router-link
-          to="/"
-          class="text-xs text-[#2b63d6] font-medium hover:underline inline-flex items-center gap-1"
+        <button
+          type="button"
+          @click="continueAsGuest"
+          class="text-xs text-[#2b63d6] font-medium hover:underline inline-flex items-center gap-1 cursor-pointer"
         >
           <span>Gunakan mode tamu lokal tanpa login</span>
           <DynamicIcon name="ChevronRight" :size="13" />
-        </router-link>
+        </button>
       </div>
     </div>
 
@@ -203,6 +205,19 @@ function setMode(newMode) {
   mode.value = newMode
   errorMessage.value = ''
   successMessage.value = ''
+}
+
+function handleBack() {
+  if (authStore.hasAuthChoice) {
+    router.push('/')
+  } else {
+    continueAsGuest()
+  }
+}
+
+function continueAsGuest() {
+  authStore.setGuestMode()
+  router.push('/')
 }
 
 async function handleSubmit() {

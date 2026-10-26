@@ -134,6 +134,7 @@ async function handleManualSync() {
 async function handleLogout() {
   await authStore.logout()
   emit('close')
+  router.push('/auth')
 }
 
 function goToAuth() {

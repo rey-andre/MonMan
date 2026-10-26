@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '@/stores/authStore'
 import HomeView from '@/views/HomeView.vue'
 import InsightsView from '@/views/InsightsView.vue'
 import WalletsView from '@/views/WalletsView.vue'
@@ -48,6 +49,25 @@ const router = createRouter({
   routes,
   scrollBehavior() {
     return { top: 0 }
+  }
+})
+
+router.beforeEach(async (to, from, next) => {
+  const authStore = useAuthStore()
+
+  if (!authStore.isInitialized) {
+    await authStore.initAuth()
+  }
+
+  const hasChoice = authStore.hasAuthChoice
+
+  if (to.path === '/auth') {
+    next()
+  } else if (!hasChoice) {
+    // Pengguna baru pertama kali akses tanpa preferensi login/guest -> arahkan ke halaman auth
+    next({ path: '/auth', replace: true })
+  } else {
+    next()
   }
 })
 
