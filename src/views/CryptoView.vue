@@ -71,7 +71,7 @@
         class="py-2 text-[12px] font-medium rounded-[16px] transition-all flex items-center justify-center gap-1.5"
         :class="activeTab === 'HOLDINGS' ? 'glass-strong text-[#0f2547] font-semibold shadow-xs' : 'text-[#41587f] hover:text-[#0f2547]'"
       >
-        <DynamicIcon name="Coins" :size="14" />
+        <DynamicIcon name="Bitcoin" :size="14" />
         <span>Koleksi Aset ({{ store.cryptoListWithValues.length }})</span>
       </button>
       <button
@@ -190,7 +190,7 @@
       </div>
 
       <div v-if="store.cryptoListWithValues.length === 0" class="text-center py-8 glass rounded-[24px]">
-        <DynamicIcon name="Coins" :size="32" class="mx-auto mb-2 text-[#4f8cff] opacity-60" />
+        <DynamicIcon name="Bitcoin" :size="32" class="mx-auto mb-2 text-[#4f8cff] opacity-60" />
         <p class="text-sm font-semibold text-[#0f2547]">Belum Ada Aset Kripto</p>
         <p class="text-xs text-[#41587f] mt-0.5">Catat pembelian koin pertama Anda sekarang</p>
       </div>

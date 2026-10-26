@@ -21,7 +21,7 @@
       >
         <div class="flex items-center justify-between mb-0.5">
           <div class="flex items-center gap-1.5 text-[12px] font-medium text-[#41587f]">
-            <DynamicIcon name="Coins" :size="14" class="text-[#ff9a4d]" />
+            <DynamicIcon name="Bitcoin" :size="14" class="text-[#ff9a4d]" />
             <span>Total Kripto</span>
           </div>
           <DynamicIcon name="ChevronRight" :size="14" class="text-[#41587f] group-hover:translate-x-0.5 transition-transform" />
@@ -53,7 +53,7 @@
         class="py-2 text-[12.5px] font-medium rounded-[16px] transition-all flex items-center justify-center gap-1.5"
         :class="activeTab === 'CRYPTO' ? 'glass-strong text-[#0f2547] font-semibold shadow-xs' : 'text-[#41587f] hover:text-[#0f2547]'"
       >
-        <DynamicIcon name="Coins" :size="14" />
+        <DynamicIcon name="Bitcoin" :size="14" />
         <span>Kripto 10 Desimal ({{ store.cryptoAssets.length }})</span>
       </button>
     </div>

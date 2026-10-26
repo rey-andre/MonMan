@@ -47,7 +47,7 @@ const route = useRoute()
 const navItems = [
   { path: '/', label: 'Beranda', icon: 'Home' },
   { path: '/wallets', label: 'Dompet', icon: 'Landmark' },
-  { path: '/crypto', label: 'Kripto', icon: 'Coins' },
+  { path: '/crypto', label: 'Kripto', icon: 'Bitcoin' },
   { path: '/insights', label: 'Analisis', icon: 'PieChart' },
   { path: '/transactions', label: 'Mutasi', icon: 'History' }
 ]

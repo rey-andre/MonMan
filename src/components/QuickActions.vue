@@ -37,7 +37,7 @@
         class="w-10 h-10 mx-auto mb-1.5 rounded-full flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform"
         style="background: linear-gradient(145deg, var(--white), #cbf3f0);"
       >
-        <DynamicIcon name="Coins" :size="18" class="text-[#0f2547]" />
+        <DynamicIcon name="Bitcoin" :size="18" class="text-[#0f2547]" />
       </div>
       <span class="text-[12.5px] font-medium text-[#0f2547] block truncate">+ Kripto</span>
     </button>
