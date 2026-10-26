@@ -117,14 +117,14 @@ const activeRange = ref('1M')
 const monthlyNetFlow = computed(() => {
   const now = new Date()
   const curYear = now.getFullYear()
-  const curMonth = now.getMonth()
+  const curMonth = now.getMonth() + 1
+  const yearMonthPrefix = `${curYear}-${String(curMonth).padStart(2, '0')}`
 
   let income = 0
   let expense = 0
 
   store.transactions.forEach(tx => {
-    const d = new Date(tx.date)
-    if (d.getFullYear() === curYear && d.getMonth() === curMonth) {
+    if (tx.date && tx.date.startsWith(yearMonthPrefix)) {
       if (tx.type === 'INCOME') income += Number(tx.amount) || 0
       if (tx.type === 'EXPENSE') expense += Number(tx.amount) || 0
     }
