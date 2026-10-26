@@ -15,19 +15,25 @@
     <!-- Composition & Cashflow Chip (referensi-ui.html: .chip) -->
     <div class="flex items-center gap-1.5 flex-wrap mb-1">
       <span 
-        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border border-transparent"
+        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border"
         :class="monthlyNetFlow >= 0 
-          ? 'bg-amber-100/70 text-amber-900 border-amber-200/50 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/40' 
-          : 'bg-rose-100/70 text-rose-900 border-rose-200/50 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800/40'"
+          ? 'bg-orange-500/15 text-[#9a4a0c] border-orange-500/30 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/40' 
+          : 'bg-rose-500/15 text-rose-700 border-rose-500/30 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800/40'"
       >
         <span>{{ monthlyNetFlow >= 0 ? '▲ +' : '▼ −' }}{{ formatIdr(Math.abs(monthlyNetFlow)) }}</span>
-        <span class="text-[10px] opacity-80">bulan ini</span>
+        <span class="text-[10px] opacity-75">bulan ini</span>
       </span>
 
-      <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium bg-[#eaf3ff] text-[#4f8cff] border border-[#a9cdff]/40 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800/40">
-        <span>Fiat: {{ 100 - store.cryptoPercentage }}%</span>
-        <span>·</span>
-        <span>Crypto: {{ store.cryptoPercentage }}%</span>
+      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium bg-blue-500/12 text-[#1a56db] border border-blue-500/25 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800/40">
+        <span class="flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#4f8cff] dark:bg-[#5d9dfc]"></span>
+          <span>Fiat: {{ 100 - store.cryptoPercentage }}%</span>
+        </span>
+        <span class="opacity-50">·</span>
+        <span class="flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#ff9a4d] dark:bg-[#fb923c]"></span>
+          <span>Crypto: {{ store.cryptoPercentage }}%</span>
+        </span>
       </span>
     </div>
 
