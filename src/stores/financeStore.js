@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { fetchUsdToIdrRate, fetchCryptoPrices } from '@/services/api'
 import { supabase } from '@/services/supabase'
+import { formatIdr, formatCrypto, formatUsd, formatShortIdr } from '@/utils/formatters'
 
 const STORAGE_KEY = 'monman_finance_data_v1'
 
@@ -228,7 +229,8 @@ export const useFinanceStore = defineStore('finance', {
       isSyncingRates: false,
       syncError: null,
       isSyncingCloud: false,
-      cloudSyncError: null
+      cloudSyncError: null,
+      isPrivacyMode: localStorage.getItem('monman_privacy_mode') === 'true'
     }
   },
 
@@ -426,6 +428,39 @@ export const useFinanceStore = defineStore('finance', {
   },
 
   actions: {
+    togglePrivacy() {
+      this.isPrivacyMode = !this.isPrivacyMode
+      localStorage.setItem('monman_privacy_mode', String(this.isPrivacyMode))
+    },
+
+    formatMoney(amount, withPrefix = true) {
+      if (this.isPrivacyMode) {
+        return withPrefix ? 'Rp ••••••••' : '••••••••'
+      }
+      return formatIdr(amount, withPrefix)
+    },
+
+    formatShortMoney(amount) {
+      if (this.isPrivacyMode) {
+        return '••••••'
+      }
+      return formatShortIdr(amount)
+    },
+
+    formatCryptoMoney(amount, maxDigits = 10) {
+      if (this.isPrivacyMode) {
+        return '••••••'
+      }
+      return formatCrypto(amount, maxDigits)
+    },
+
+    formatUsdMoney(amount) {
+      if (this.isPrivacyMode) {
+        return '$••••••'
+      }
+      return formatUsd(amount)
+    },
+
     saveToStorage() {
       const data = {
         wallets: this.wallets,

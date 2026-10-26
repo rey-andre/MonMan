@@ -104,7 +104,7 @@
           <div class="pt-2 border-t border-white/60 flex items-center justify-between">
             <span class="text-xs font-bold text-[#0f2547]">Estimasi Nilai IDR:</span>
             <span class="text-sm font-extrabold text-[#4f8cff] font-mono">
-              {{ formatIdr(calculatedIdrValue) }}
+              {{ store.formatMoney(calculatedIdrValue) }}
             </span>
           </div>
         </div>

@@ -32,7 +32,7 @@
         />
 
         <text x="60" y="58" text-anchor="middle" font-size="14" font-weight="600" fill="var(--ink)" font-family="Outfit,sans-serif">
-          {{ formatShortIdr(store.totalMonthlyExpense) }}
+          {{ store.formatShortMoney(store.totalMonthlyExpense) }}
         </text>
         <text x="60" y="73" text-anchor="middle" font-size="9.5" fill="var(--ink2)" font-family="Outfit,sans-serif">
           target 5 Jt
@@ -70,7 +70,7 @@
           class="text-[20px] font-semibold tracking-[-0.02em] font-mono leading-tight"
           :class="store.netDebtBalance >= 0 ? 'text-[#0f2547]' : 'text-amber-700'"
         >
-          {{ store.netDebtBalance >= 0 ? '+' : '−' }}{{ formatShortIdr(Math.abs(store.netDebtBalance)) }}
+          {{ store.isPrivacyMode ? '••••••' : (store.netDebtBalance >= 0 ? '+' : '−') + formatShortIdr(Math.abs(store.netDebtBalance)) }}
         </div>
         <p class="text-[11.5px] text-[#41587f] mt-0.5 mb-2.5">
           {{ store.netDebtBalance >= 0 ? 'Surplus Hak Tagih' : 'Defisit Kewajiban' }}
@@ -84,7 +84,7 @@
               Piutang:
             </span>
             <span class="font-mono font-semibold text-[#0f2547] text-[12px]">
-              {{ formatShortIdr(store.totalPiutang) }}
+              {{ store.formatShortMoney(store.totalPiutang) }}
             </span>
           </div>
 
@@ -94,7 +94,7 @@
               Hutang:
             </span>
             <span class="font-mono font-semibold text-[#0f2547] text-[12px]">
-              {{ formatShortIdr(store.totalHutang) }}
+              {{ store.formatShortMoney(store.totalHutang) }}
             </span>
           </div>
         </div>

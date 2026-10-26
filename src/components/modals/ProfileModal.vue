@@ -64,6 +64,29 @@
         </div>
       </div>
 
+      <!-- Privacy Mode Toggle Row -->
+      <div class="mb-3.5 p-3 rounded-2xl bg-white/40 border border-white/60 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl glass flex items-center justify-center text-[#41587f]">
+            <DynamicIcon :name="financeStore.isPrivacyMode ? 'EyeOff' : 'Eye'" :size="16" />
+          </div>
+          <div>
+            <div class="text-xs font-semibold text-[#0f2547]">Sembunyikan Saldo</div>
+            <div class="text-[11px] text-[#41587f]">Sensor nominal finansial di layar</div>
+          </div>
+        </div>
+        <button
+          type="button"
+          @click="financeStore.togglePrivacy"
+          class="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5"
+          :class="financeStore.isPrivacyMode 
+            ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30' 
+            : 'glass text-[#41587f] hover:text-[#0f2547]'"
+        >
+          <span>{{ financeStore.isPrivacyMode ? 'Aktif' : 'Nonaktif' }}</span>
+        </button>
+      </div>
+
       <!-- Theme Switcher Segmented Control (DESIGN.md 6.4) -->
       <div class="mb-4">
         <label class="block text-xs font-semibold text-[#41587f] mb-1.5">Tema Tampilan</label>

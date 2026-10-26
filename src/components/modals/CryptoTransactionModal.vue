@@ -161,7 +161,7 @@
               :key="w.id"
               :value="w.id"
             >
-              {{ w.name }} (Saldo: Rp {{ Number(w.balance).toLocaleString('id-ID') }})
+              {{ w.name }} (Saldo: {{ store.formatMoney(w.balance) }})
             </option>
           </select>
         </div>

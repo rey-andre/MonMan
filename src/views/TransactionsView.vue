@@ -24,7 +24,7 @@
           <span>Total Masuk</span>
         </div>
         <div class="text-[15px] font-semibold text-[#0f2547] font-mono truncate">
-          {{ formatIdr(stats.income) }}
+          {{ store.formatMoney(stats.income) }}
         </div>
       </div>
       <div class="glass p-3 rounded-[20px]">
@@ -33,7 +33,7 @@
           <span>Total Keluar</span>
         </div>
         <div class="text-[15px] font-semibold text-[#0f2547] font-mono truncate">
-          {{ formatIdr(stats.expense) }}
+          {{ store.formatMoney(stats.expense) }}
         </div>
       </div>
     </div>
@@ -133,7 +133,7 @@
               :class="tx.type === 'INCOME' ? 'text-[#1f5fd1]' : tx.type === 'TRANSFER' ? 'text-indigo-600' : 'text-[#0f2547]'"
             >
               {{ tx.type === 'INCOME' ? '+' : tx.type === 'EXPENSE' ? '−' : '⇄' }}
-              {{ formatIdr(tx.amount) }}
+              {{ store.formatMoney(tx.amount) }}
             </div>
             <div class="text-[10px] text-[#41587f]">
               {{ tx.type === 'EXPENSE' ? 'Pengeluaran' : tx.type === 'INCOME' ? 'Pemasukan' : 'Pindah Saldo' }}

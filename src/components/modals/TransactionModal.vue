@@ -80,7 +80,7 @@
             class="w-full px-3.5 py-2.5 rounded-2xl glass-input text-sm font-medium text-[#0f2547] bg-white/60 cursor-pointer"
           >
             <option v-for="w in store.wallets" :key="w.id" :value="w.id">
-              {{ w.name }} (Saldo: {{ formatIdr(w.balance) }})
+              {{ w.name }} (Saldo: {{ store.formatMoney(w.balance) }})
             </option>
           </select>
         </div>
@@ -97,7 +97,7 @@
               :key="w.id" 
               :value="w.id"
             >
-              {{ w.name }} (Saldo: {{ formatIdr(w.balance) }})
+              {{ w.name }} (Saldo: {{ store.formatMoney(w.balance) }})
             </option>
           </select>
         </div>

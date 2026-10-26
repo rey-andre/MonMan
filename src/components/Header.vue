@@ -20,8 +20,22 @@
       <h1 class="text-[22px] font-semibold tracking-tight text-[#0f2547] mt-0.5">MonMan Finance</h1>
     </div>
 
-    <!-- Right Controls: Theme Toggle, Sync button & Avatar (referensi-ui.html) -->
-    <div class="flex items-center gap-2">
+    <!-- Right Controls: Privacy Toggle, Theme Toggle, Sync button & Avatar (referensi-ui.html) -->
+    <div class="flex items-center gap-1.5">
+      <!-- Privacy Eye Toggle Button -->
+      <button
+        @click="store.togglePrivacy"
+        :title="store.isPrivacyMode ? 'Tampilkan Nilai Keuangan' : 'Sembunyikan Nilai Keuangan'"
+        class="w-9 h-9 rounded-2xl glass flex items-center justify-center text-[#41587f] hover:text-[#0f2547] active:scale-95 transition-all cursor-pointer"
+        aria-label="Toggle Sembunyikan Nilai"
+      >
+        <DynamicIcon 
+          :name="store.isPrivacyMode ? 'EyeOff' : 'Eye'" 
+          :size="15" 
+          :class="store.isPrivacyMode ? 'text-amber-500 dark:text-amber-400' : 'text-[#41587f]'"
+        />
+      </button>
+
       <!-- Quick Theme Toggle Button -->
       <button
         @click="themeStore.toggleTheme"

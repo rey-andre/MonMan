@@ -22,7 +22,7 @@
             <span>Pemasukan</span>
           </div>
           <div class="text-[17px] font-semibold text-[#0f2547] font-mono">
-            {{ formatIdr(totalIncomeThisMonth) }}
+            {{ store.formatMoney(totalIncomeThisMonth) }}
           </div>
         </div>
 
@@ -33,7 +33,7 @@
             <span>Pengeluaran</span>
           </div>
           <div class="text-[17px] font-semibold text-[#0f2547] font-mono">
-            {{ formatIdr(store.totalMonthlyExpense) }}
+            {{ store.formatMoney(store.totalMonthlyExpense) }}
           </div>
         </div>
       </div>
@@ -46,7 +46,7 @@
             class="text-[16px] font-semibold font-mono"
             :class="netCashFlow >= 0 ? 'text-[#1f5fd1]' : 'text-red-500'"
           >
-            {{ netCashFlow >= 0 ? '+' : '−' }}{{ formatIdr(Math.abs(netCashFlow)) }}
+            {{ store.isPrivacyMode ? '••••••••' : (netCashFlow >= 0 ? '+' : '−') + formatIdr(Math.abs(netCashFlow)) }}
           </span>
         </div>
         <div class="text-right">
@@ -61,7 +61,7 @@
       <div class="flex items-center justify-between mb-2">
         <h2 class="text-[15px] font-semibold text-[#0f2547]">Distribusi Pengeluaran</h2>
         <span class="text-[13px] font-semibold text-[#4f8cff] font-mono">
-          Total: {{ formatIdr(store.totalMonthlyExpense) }}
+          Total: {{ store.formatMoney(store.totalMonthlyExpense) }}
         </span>
       </div>
 
@@ -93,7 +93,7 @@
         />
 
         <text x="60" y="58" text-anchor="middle" font-size="15" font-weight="600" fill="var(--ink)" font-family="Outfit,sans-serif">
-          {{ formatShortIdr(store.totalMonthlyExpense) }}
+          {{ store.formatShortMoney(store.totalMonthlyExpense) }}
         </text>
         <text x="60" y="74" text-anchor="middle" font-size="10" fill="var(--ink2)" font-family="Outfit,sans-serif">
           Bulan Ini
@@ -113,7 +113,7 @@
               <span class="font-medium text-[#0f2547] text-[13px]">{{ cat.name }}</span>
             </div>
             <div class="font-mono text-[#0f2547]">
-              <span class="font-semibold">{{ formatIdr(cat.total) }}</span>
+              <span class="font-semibold">{{ store.formatMoney(cat.total) }}</span>
               <span class="text-[#41587f] text-[11px] ml-1.5 font-sans">({{ cat.percentage }}%)</span>
             </div>
           </div>
@@ -158,7 +158,7 @@
             <span>Total Piutang</span>
           </div>
           <div class="text-[16px] font-semibold text-[#0f2547] font-mono truncate">
-            {{ formatIdr(store.totalPiutang) }}
+            {{ store.formatMoney(store.totalPiutang) }}
           </div>
           <span class="text-[11px] text-[#41587f]">Hak tagih belum dibayar</span>
         </div>
@@ -170,7 +170,7 @@
             <span>Total Hutang</span>
           </div>
           <div class="text-[16px] font-semibold text-[#0f2547] font-mono truncate">
-            {{ formatIdr(store.totalHutang) }}
+            {{ store.formatMoney(store.totalHutang) }}
           </div>
           <span class="text-[11px] text-[#41587f]">Kewajiban harus dibayar</span>
         </div>
@@ -242,7 +242,7 @@
                 class="text-[13.5px] font-semibold font-mono"
                 :class="item.isPaid ? 'text-[#41587f] line-through' : item.type === 'PIUTANG' ? 'text-[#1f5fd1]' : 'text-[#9a4a0c]'"
               >
-                {{ formatIdr(item.amount) }}
+                {{ store.formatMoney(item.amount) }}
               </div>
             </div>
 

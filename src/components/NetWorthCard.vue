@@ -1,7 +1,18 @@
 <template>
   <section class="glass p-5 rounded-[28px] relative overflow-hidden" aria-label="Total balance">
     <div class="flex items-center justify-between">
-      <div class="text-[13px] text-[#41587f] font-normal">Total Kekayaan Bersih</div>
+      <div class="text-[13px] text-[#41587f] font-normal flex items-center gap-1.5">
+        <span>Total Kekayaan Bersih</span>
+        <button
+          @click="store.togglePrivacy"
+          type="button"
+          class="w-6 h-6 rounded-lg glass flex items-center justify-center text-[#41587f] hover:text-[#0f2547] active:scale-90 transition-all cursor-pointer"
+          :title="store.isPrivacyMode ? 'Tampilkan Nilai Keuangan' : 'Sembunyikan Nilai Keuangan'"
+          aria-label="Toggle Sembunyikan Nilai"
+        >
+          <DynamicIcon :name="store.isPrivacyMode ? 'EyeOff' : 'Eye'" :size="13" />
+        </button>
+      </div>
       <div class="text-[11px] font-medium text-[#41587f]/80 font-mono">
         1 USD = {{ formatIdr(store.usdToIdrRate) }}
       </div>
@@ -9,7 +20,7 @@
 
     <!-- Big Net Worth Amount (referensi-ui.html: .amt) -->
     <div class="text-3xl sm:text-[38px] font-semibold tracking-[-0.03em] text-[#0f2547] mt-1 mb-2 font-sans flex items-baseline">
-      <span>{{ formatIdr(store.totalNetWorth) }}</span>
+      <span>{{ store.formatMoney(store.totalNetWorth) }}</span>
     </div>
 
     <!-- Composition & Cashflow Chip (referensi-ui.html: .chip) -->
@@ -20,7 +31,7 @@
           ? 'bg-[#ff9a4d]/20 text-[#9a4a0c] border-[#ff9a4d]/40 dark:bg-amber-400/15 dark:text-amber-300 dark:border-amber-400/30' 
           : 'bg-rose-500/15 text-rose-700 border-rose-500/30 dark:bg-rose-400/15 dark:text-rose-300 dark:border-rose-400/30'"
       >
-        <span>{{ monthlyNetFlow >= 0 ? '▲ +' : '▼ −' }}{{ formatIdr(Math.abs(monthlyNetFlow)) }}</span>
+        <span>{{ monthlyNetFlow >= 0 ? '▲ +' : '▼ −' }}{{ store.isPrivacyMode ? '••••••' : formatIdr(Math.abs(monthlyNetFlow)) }}</span>
         <span class="text-[10px] opacity-80">bulan ini</span>
       </span>
 
@@ -96,6 +107,7 @@
 import { ref, computed } from 'vue'
 import { useFinanceStore } from '@/stores/financeStore'
 import { formatIdr } from '@/utils/formatters'
+import DynamicIcon from '@/components/DynamicIcon.vue'
 
 const store = useFinanceStore()
 const ranges = ['1W', '1M', '3M', '1Y']

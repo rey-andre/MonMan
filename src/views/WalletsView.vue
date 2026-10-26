@@ -24,7 +24,7 @@
           <span>Total Fiat</span>
         </div>
         <div class="text-[16px] font-semibold text-[#0f2547] font-mono truncate">
-          {{ formatIdr(store.totalFiatBalance) }}
+          {{ store.formatMoney(store.totalFiatBalance) }}
         </div>
         <div class="text-[11px] text-[#41587f]/80 mt-0.5">
           {{ store.wallets.length }} rekening aktif
@@ -43,7 +43,7 @@
           <DynamicIcon name="ChevronRight" :size="14" class="text-[#41587f] group-hover:translate-x-0.5 transition-transform" />
         </div>
         <div class="text-[16px] font-semibold text-[#4f8cff] font-mono truncate">
-          {{ formatIdr(store.totalCryptoValueIdr) }}
+          {{ store.formatMoney(store.totalCryptoValueIdr) }}
         </div>
         <div class="text-[11px] text-[#41587f]/80 mt-0.5 flex items-center gap-1">
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
@@ -96,7 +96,7 @@
               </span>
             </div>
             <div class="text-[12.5px] text-[#41587f] mt-0.5">
-              Saldo: <strong class="text-[#0f2547] font-mono font-semibold">{{ formatIdr(wallet.balance) }}</strong>
+              Saldo: <strong class="text-[#0f2547] font-mono font-semibold">{{ store.formatMoney(wallet.balance) }}</strong>
             </div>
           </div>
         </div>
@@ -182,10 +182,10 @@
           <!-- Total IDR Value -->
           <div class="text-right">
             <div class="text-[15px] font-semibold text-[#1f5fd1] font-mono">
-              {{ formatIdr(asset.valueIdr) }}
+              {{ store.formatMoney(asset.valueIdr) }}
             </div>
             <div class="text-[11px] text-[#41587f] font-mono">
-              ≈ {{ formatUsd(asset.valueUsd) }}
+              ≈ {{ store.formatUsdMoney(asset.valueUsd) }}
             </div>
           </div>
         </div>
@@ -195,7 +195,7 @@
           <div>
             <span class="text-[#41587f] text-[11px]">Kepemilikan:</span>
             <div class="font-mono font-semibold text-[#0f2547] select-all text-xs tracking-tight">
-              {{ formatCrypto(asset.amount) }} {{ asset.symbol }}
+              {{ store.formatCryptoMoney(asset.amount) }} {{ asset.symbol }}
             </div>
           </div>
 

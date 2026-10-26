@@ -37,7 +37,7 @@
         >
           <div class="text-[12px] font-medium text-[#41587f]">Rekening Fiat</div>
           <div class="text-base font-semibold text-[#0f2547] mt-0.5 font-mono truncate">
-            {{ formatIdr(store.totalFiatBalance) }}
+            {{ store.formatMoney(store.totalFiatBalance) }}
           </div>
           <div class="text-[11px] text-[#4f8cff] font-medium mt-1">
             {{ store.wallets.length }} rekening aktif
@@ -51,7 +51,7 @@
         >
           <div class="text-[12px] font-medium text-[#41587f]">Kripto (10 Desimal)</div>
           <div class="text-base font-semibold text-[#4f8cff] mt-0.5 font-mono truncate">
-            {{ formatIdr(store.totalCryptoValueIdr) }}
+            {{ store.formatMoney(store.totalCryptoValueIdr) }}
           </div>
           <div class="text-[11px] text-[#ff9a4d] font-medium mt-1">
             {{ store.cryptoAssets.length }} koin tercatat
@@ -106,7 +106,7 @@
             :class="tx.type === 'INCOME' ? 'text-[#1f5fd1]' : tx.type === 'TRANSFER' ? 'text-indigo-600' : 'text-[#0f2547]'"
           >
             {{ tx.type === 'INCOME' ? '+' : tx.type === 'EXPENSE' ? '−' : '⇄' }}
-            {{ formatIdr(tx.amount) }}
+            {{ store.formatMoney(tx.amount) }}
           </div>
         </div>
       </div>

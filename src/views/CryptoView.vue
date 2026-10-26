@@ -30,11 +30,11 @@
       <!-- Current Portfolio Value in IDR & USD -->
       <div class="flex items-baseline gap-2">
         <div class="text-[26px] font-bold text-[#0f2547] font-mono tracking-tight">
-          {{ formatIdr(store.totalCryptoValueIdr) }}
+          {{ store.formatMoney(store.totalCryptoValueIdr) }}
         </div>
       </div>
       <div class="text-[12.5px] text-[#41587f] font-mono mt-0.5">
-        ≈ ${{ totalCryptoValueUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }} USD
+        {{ store.isPrivacyMode ? '$••••••' : '≈ $' + totalCryptoValueUsd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' USD' }}
       </div>
 
       <!-- Metric Grid: Modal Terinvestasi, PnL, ROI -->
@@ -43,7 +43,7 @@
         <div class="p-2 rounded-xl bg-white/40">
           <span class="text-[10.5px] text-[#41587f] block">Modal Beli</span>
           <span class="text-[12.5px] font-semibold text-[#0f2547] font-mono block truncate">
-            {{ formatShortIdr(store.totalCryptoInvestedIdr) }}
+            {{ store.formatShortMoney(store.totalCryptoInvestedIdr) }}
           </span>
         </div>
 
@@ -54,7 +54,7 @@
             class="text-[12.5px] font-semibold font-mono block truncate"
             :class="store.totalCryptoPnlIdr >= 0 ? 'text-emerald-600' : 'text-rose-600'"
           >
-            {{ store.totalCryptoPnlIdr >= 0 ? '+' : '−' }}{{ formatShortIdr(Math.abs(store.totalCryptoPnlIdr)) }}
+            {{ store.isPrivacyMode ? '••••••' : (store.totalCryptoPnlIdr >= 0 ? '+' : '−') + formatShortIdr(Math.abs(store.totalCryptoPnlIdr)) }}
           </span>
         </div>
 
@@ -127,7 +127,7 @@
                 </span>
               </div>
               <div class="text-[12px] font-mono text-[#41587f] mt-0.5" title="Presisi 10 desimal">
-                {{ formatCryptoAmount(coin.amount) }} {{ coin.symbol }}
+                {{ store.formatCryptoMoney(coin.amount) }} {{ coin.symbol }}
               </div>
             </div>
           </div>
@@ -135,10 +135,10 @@
           <!-- Current Value in IDR -->
           <div class="text-right">
             <div class="text-[15px] font-semibold text-[#0f2547] font-mono">
-              {{ formatIdr(coin.valueIdr) }}
+              {{ store.formatMoney(coin.valueIdr) }}
             </div>
             <div class="text-[11px] font-mono text-[#41587f]">
-              ${{ Number(coin.valueUsd).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+              {{ store.formatUsdMoney(coin.valueUsd) }}
             </div>
           </div>
         </div>
@@ -169,7 +169,7 @@
                 class="font-mono font-semibold text-[11.5px]"
                 :class="coin.unrealizedPnlIdr >= 0 ? 'text-emerald-600' : 'text-rose-600'"
               >
-                {{ coin.unrealizedPnlIdr >= 0 ? '+' : '−' }}{{ formatShortIdr(Math.abs(coin.unrealizedPnlIdr)) }}
+                {{ store.isPrivacyMode ? '••••••' : (coin.unrealizedPnlIdr >= 0 ? '+' : '−') + formatShortIdr(Math.abs(coin.unrealizedPnlIdr)) }}
               </span>
               <span 
                 class="text-[10.5px] font-bold px-1.5 py-0.2 rounded-md font-mono"
@@ -184,7 +184,7 @@
         <!-- Bottom Actions -->
         <div class="flex items-center justify-between pt-1">
           <div class="text-[10.5px] text-[#41587f]">
-            Modal: <strong class="font-mono font-semibold text-[#0f2547]">{{ formatShortIdr(coin.totalInvestedIdr) }}</strong>
+            Modal: <strong class="font-mono font-semibold text-[#0f2547]">{{ store.formatShortMoney(coin.totalInvestedIdr) }}</strong>
           </div>
           <div class="flex items-center gap-1.5">
             <button
@@ -247,7 +247,7 @@
               </span>
             </div>
             <div class="text-[11.5px] text-[#41587f] font-mono mt-0.5 truncate">
-              {{ ctx.type === 'BUY' ? '+' : '−' }}{{ formatCryptoAmount(ctx.amount) }} {{ ctx.symbol }}
+              {{ store.isPrivacyMode ? '••••••' : (ctx.type === 'BUY' ? '+' : '−') + formatCryptoAmount(ctx.amount) }} {{ ctx.symbol }}
             </div>
             <div class="text-[10.5px] text-[#41587f]/80 mt-0.5">
               {{ ctx.transactionDate }}
@@ -263,10 +263,10 @@
               class="text-[13.5px] font-semibold font-mono"
               :class="ctx.type === 'BUY' ? 'text-emerald-600' : 'text-rose-600'"
             >
-              {{ ctx.fiatCurrency === 'USD' ? '$' + Number(ctx.fiatAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : formatIdr(ctx.fiatAmount) }}
+              {{ store.isPrivacyMode ? '••••••••' : (ctx.fiatCurrency === 'USD' ? '$' + Number(ctx.fiatAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : formatIdr(ctx.fiatAmount)) }}
             </div>
             <div v-if="ctx.fiatCurrency === 'USD'" class="text-[10px] font-mono text-[#41587f]">
-              ≈ {{ formatIdr(ctx.fiatAmount * store.usdToIdrRate) }}
+              ≈ {{ store.formatMoney(ctx.fiatAmount * store.usdToIdrRate) }}
             </div>
           </div>
 

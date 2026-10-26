@@ -68,3 +68,22 @@ export function formatRelativeDate(dateString) {
     year: date.getFullYear() !== today.getFullYear() ? 'numeric' : undefined
   }).format(date)
 }
+
+/**
+ * Compact format for abbreviated large amounts (e.g. 5.000.000 -> 5.0 Jt)
+ */
+export function formatShortIdr(val) {
+  if (val === undefined || val === null || isNaN(val)) return '0'
+  const num = Number(val)
+  if (num >= 1000000000) return (num / 1000000000).toFixed(1) + ' M'
+  if (num >= 1000000) return (num / 1000000).toFixed(1) + ' Jt'
+  if (num >= 1000) return (num / 1000).toFixed(0) + ' Rb'
+  return String(num)
+}
+
+/**
+ * Privacy masking helper
+ */
+export function formatPrivacy(val, isPrivacy = false, mask = '••••••••') {
+  return isPrivacy ? mask : val
+}
