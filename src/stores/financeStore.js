@@ -250,20 +250,32 @@ export const useFinanceStore = defineStore('finance', {
         const valueUsd = amount * priceUsd
         const valueIdr = valueUsd * state.usdToIdrRate
 
-        // Calculate Cost Basis & PnL from crypto transactions
-        const coinTxs = state.cryptoTransactions.filter(t => (t.symbol || '').toUpperCase() === sym)
+        // Calculate Cost Basis & PnL from crypto transactions chronologically
+        const coinTxs = state.cryptoTransactions
+          .filter(t => (t.symbol || '').toUpperCase() === sym)
+          .sort((a, b) => new Date(a.transactionDate || 0) - new Date(b.transactionDate || 0))
+
+        let runningAmount = 0
         let totalInvestedIdr = 0
 
         coinTxs.forEach(t => {
+          const txAmount = Number(t.amount) || 0
           let fiatIdr = Number(t.fiatAmount) || 0
           if (t.fiatCurrency === 'USD') {
             fiatIdr *= state.usdToIdrRate
           }
 
           if (t.type === 'BUY' || t.type === 'TRANSFER_IN') {
+            runningAmount += txAmount
             totalInvestedIdr += fiatIdr
-          } else if (t.type === 'SELL') {
-            totalInvestedIdr = Math.max(0, totalInvestedIdr - fiatIdr)
+          } else if (t.type === 'SELL' || t.type === 'TRANSFER_OUT') {
+            if (runningAmount > 0) {
+              const soldRatio = Math.min(1, txAmount / runningAmount)
+              totalInvestedIdr = Math.max(0, totalInvestedIdr * (1 - soldRatio))
+              runningAmount = Math.max(0, runningAmount - txAmount)
+            } else {
+              totalInvestedIdr = 0
+            }
           }
         })
 
