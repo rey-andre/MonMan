@@ -57,6 +57,10 @@
           </div>
         </div>
 
+        <p v-if="duplicateCoin" class="text-[11px] text-amber-600 font-medium -mt-1">
+          Koin {{ duplicateCoin.symbol }} sudah ada di portofolio. Menyimpan akan memperbarui jumlah koin ini.
+        </p>
+
         <!-- Amount (Supports 10 Decimals as required by PRD 4.4) -->
         <div>
           <div class="flex items-center justify-between mb-1">
@@ -176,6 +180,13 @@ const form = ref({
 })
 
 const isEdit = computed(() => !!props.cryptoData?.id)
+
+const duplicateCoin = computed(() => {
+  if (isEdit.value) return null
+  const sym = (form.value.symbol || '').trim().toUpperCase()
+  if (!sym) return null
+  return store.cryptoAssets.find(c => (c.symbol || '').toUpperCase() === sym) || null
+})
 
 watch(() => props.isOpen, (newVal) => {
   if (newVal) {

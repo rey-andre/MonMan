@@ -845,24 +845,28 @@ export const useFinanceStore = defineStore('finance', {
       const cleanSymbol = (symbol || '').trim().toUpperCase()
       const parsedAmount = typeof amount === 'string' ? parseFloat(amount) : Number(amount)
 
-      if (id) {
-        const idx = this.cryptoAssets.findIndex(c => c.id === id)
+      // Check if updating by ID, or if asset with cleanSymbol already exists to prevent duplicate symbols
+      const existingAsset = !id ? this.cryptoAssets.find(c => c.symbol.toUpperCase() === cleanSymbol) : null
+      const targetId = id || existingAsset?.id
+
+      if (targetId) {
+        const idx = this.cryptoAssets.findIndex(c => c.id === targetId)
         if (idx !== -1) {
           this.cryptoAssets[idx] = {
             ...this.cryptoAssets[idx],
             symbol: cleanSymbol,
-            name: name || cleanSymbol,
+            name: name || this.cryptoAssets[idx].name || cleanSymbol,
             amount: parsedAmount || 0
           }
         }
 
-        if (supabase && !id.startsWith('c-')) {
+        if (supabase && !targetId.startsWith('c-')) {
           await supabase.from('crypto_assets').update({
             symbol: cleanSymbol,
             name: name || cleanSymbol,
             amount: parsedAmount || 0,
             updated_at: new Date().toISOString()
-          }).eq('id', id)
+          }).eq('id', targetId)
         }
       } else {
         const tempId = `c-${Date.now()}`
