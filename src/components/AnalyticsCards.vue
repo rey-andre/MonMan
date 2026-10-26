@@ -1,0 +1,175 @@
+<template>
+  <div class="grid grid-cols-[1.15fr_1fr] gap-3 my-2">
+    <!-- Card 1: Pengeluaran Bulan Ini (referensi-ui.html: .card) -->
+    <section class="glass p-4 rounded-[26px]" aria-label="Pengeluaran Bulan Ini">
+      <h2 class="text-[14px] font-medium text-[#41587f] mb-2.5">Pengeluaran Bulan Ini</h2>
+      
+      <!-- SVG Donut Chart (referensi-ui.html: .donut) -->
+      <svg class="w-full max-w-[110px] mx-auto block" viewBox="0 0 120 120" role="img">
+        <circle
+          cx="60"
+          cy="60"
+          r="44"
+          fill="none"
+          stroke="rgba(79, 140, 255, 0.15)"
+          stroke-width="16"
+        />
+
+        <circle
+          v-for="(seg, idx) in donutSegments"
+          :key="idx"
+          cx="60"
+          cy="60"
+          r="44"
+          fill="none"
+          :stroke="seg.color"
+          stroke-width="16"
+          :stroke-dasharray="`${seg.dashLength} 276`"
+          :stroke-dashoffset="seg.dashOffset"
+          transform="rotate(-90 60 60)"
+          stroke-linecap="round"
+          class="transition-all duration-500 ease-out"
+        />
+
+        <text x="60" y="58" text-anchor="middle" font-size="14" font-weight="600" fill="#0f2547" font-family="Outfit,sans-serif">
+          {{ formatShortIdr(store.totalMonthlyExpense) }}
+        </text>
+        <text x="60" y="73" text-anchor="middle" font-size="9.5" fill="#41587f" font-family="Outfit,sans-serif">
+          target 5 Jt
+        </text>
+      </svg>
+
+      <!-- Legend (referensi-ui.html: .legend) -->
+      <ul class="mt-2.5 space-y-1.5 text-[12.5px] text-[#0f2547]">
+        <li 
+          v-for="cat in topCategories" 
+          :key="cat.name"
+          class="flex items-center justify-between"
+        >
+          <div class="flex items-center gap-2 truncate">
+            <b class="w-2.5 h-2.5 rounded-full shrink-0" :style="{ backgroundColor: cat.color }"></b>
+            <span class="truncate text-[12px]">{{ cat.name }}</span>
+          </div>
+          <span class="text-[#41587f] text-[11px] font-mono shrink-0 ml-1">{{ cat.percentage }}%</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Card 2: Ringkasan Hutang & Piutang (referensi-ui.html: .goal) -->
+    <section class="glass p-4 rounded-[26px] flex flex-col justify-between" aria-label="Ringkasan Hutang Piutang">
+      <div>
+        <div class="flex items-center justify-between mb-1.5">
+          <h2 class="text-[14px] font-medium text-[#41587f]">Hutang & Piutang</h2>
+          <router-link to="/insights" class="text-[11.5px] text-[#2b63d6] font-medium hover:underline">
+            Detail
+          </router-link>
+        </div>
+
+        <!-- Net Debt Balance -->
+        <div 
+          class="text-[20px] font-semibold tracking-[-0.02em] font-mono leading-tight"
+          :class="store.netDebtBalance >= 0 ? 'text-[#0f2547]' : 'text-amber-700'"
+        >
+          {{ store.netDebtBalance >= 0 ? '+' : '−' }}{{ formatShortIdr(Math.abs(store.netDebtBalance)) }}
+        </div>
+        <p class="text-[11.5px] text-[#41587f] mt-0.5 mb-2.5">
+          {{ store.netDebtBalance >= 0 ? 'Surplus Hak Tagih' : 'Defisit Kewajiban' }}
+        </p>
+
+        <!-- Piutang & Hutang Breakdown Row -->
+        <div class="space-y-1.5 text-xs">
+          <div class="flex items-center justify-between p-1.5 rounded-xl bg-white/40">
+            <span class="text-[#41587f] text-[11px] flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#4f8cff]"></span>
+              Piutang:
+            </span>
+            <span class="font-mono font-semibold text-[#0f2547] text-[12px]">
+              {{ formatShortIdr(store.totalPiutang) }}
+            </span>
+          </div>
+
+          <div class="flex items-center justify-between p-1.5 rounded-xl bg-white/40">
+            <span class="text-[#41587f] text-[11px] flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#ff9a4d]"></span>
+              Hutang:
+            </span>
+            <span class="font-mono font-semibold text-[#0f2547] text-[12px]">
+              {{ formatShortIdr(store.totalHutang) }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ratio Progress Bar -->
+      <div class="mt-2.5">
+        <div class="h-2 rounded-full bg-white/50 overflow-hidden flex border border-white/60">
+          <div 
+            class="h-full transition-all duration-500"
+            :style="{ 
+              width: `${piutangRatio}%`,
+              background: 'var(--blue)' 
+            }"
+            title="Piutang"
+          ></div>
+          <div 
+            class="h-full transition-all duration-500"
+            :style="{ 
+              width: `${100 - piutangRatio}%`,
+              background: 'var(--orange)' 
+            }"
+            title="Hutang"
+          ></div>
+        </div>
+      </div>
+    </section>
+  </div>
+</template>
+
+<script setup>
+import { computed } from 'vue'
+import { useFinanceStore } from '@/stores/financeStore'
+
+const store = useFinanceStore()
+const circumference = 276.46
+
+function formatShortIdr(val) {
+  if (!val || val === 0) return 'Rp 0'
+  if (val >= 1000000) return `Rp ${(val / 1000000).toFixed(1)} Jt`
+  if (val >= 1000) return `Rp ${(val / 1000).toFixed(0)} Rb`
+  return `Rp ${val}`
+}
+
+const piutangRatio = computed(() => {
+  const total = store.totalPiutang + store.totalHutang
+  if (total <= 0) return 50
+  return Math.round((store.totalPiutang / total) * 100)
+})
+
+const topCategories = computed(() => {
+  const cats = store.spendingByCategory
+  if (cats.length === 0) {
+    return [
+      { name: 'Kuliner', color: '#ff9a4d', percentage: 46 },
+      { name: 'Transport', color: '#4f8cff', percentage: 30 },
+      { name: 'Belanja', color: '#a9cdff', percentage: 24 }
+    ]
+  }
+  return cats.slice(0, 3)
+})
+
+const donutSegments = computed(() => {
+  const cats = topCategories.value
+  let currentOffset = 0
+
+  return cats.map(cat => {
+    const dashLength = (cat.percentage / 100) * circumference
+    const seg = {
+      color: cat.color,
+      dashLength: Math.max(0, dashLength - 3),
+      dashOffset: -currentOffset
+    }
+    currentOffset += dashLength
+    return seg
+  })
+})
+</script>

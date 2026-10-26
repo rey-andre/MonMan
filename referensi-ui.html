@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Glass Finance Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: light;
+  --ink:#0f2547; --ink2:#41587f; --blue:#4f8cff; --sky:#a9cdff; --mist:#eaf3ff;
+  --orange:#ff9a4d; --peach:#ffd2ad; --white:#fff;
+  --glass:rgba(255,255,255,.46); --glass-strong:rgba(255,255,255,.66); --edge:rgba(255,255,255,.85);
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;font-family:'Outfit',system-ui,-apple-system,'Segoe UI',sans-serif;color:var(--ink);
+  background:linear-gradient(160deg,#dcebff 0%,#f4f9ff 45%,#ffeede 100%);display:flex;justify-content:center;align-items:flex-start}
+.phone{position:relative;width:100%;max-width:405px;min-height:720px;aspect-ratio:9/16;overflow:hidden;
+  background:linear-gradient(170deg,#cfe3ff 0%,#eef5ff 42%,#fff1e4 100%)}
+@media(min-width:500px){body{padding:24px 0}.phone{border-radius:44px;box-shadow:0 24px 60px rgba(79,140,255,.22)}}
+.orb{position:absolute;border-radius:50%;filter:blur(38px);pointer-events:none}
+.o1{width:230px;height:230px;background:var(--blue);opacity:.45;top:-60px;left:-70px}
+.o2{width:210px;height:210px;background:var(--orange);opacity:.5;top:230px;right:-90px}
+.o3{width:240px;height:240px;background:var(--sky);opacity:.7;bottom:90px;left:-90px}
+.scroll{position:relative;height:100%;overflow-y:auto;padding:22px 18px 110px;scrollbar-width:none}
+.scroll::-webkit-scrollbar{display:none}
+.glass{background:var(--glass);border:1px solid var(--edge);border-radius:28px;
+  -webkit-backdrop-filter:blur(22px) saturate(160%);backdrop-filter:blur(22px) saturate(160%);
+  box-shadow:0 10px 30px rgba(79,140,255,.14), inset 0 1px 0 rgba(255,255,255,.9)}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.hi{font-size:14px;color:var(--ink2)}
+h1{margin:0;font-size:22px;font-weight:600;letter-spacing:-.01em}
+.avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-weight:600;color:#fff;
+  background:linear-gradient(135deg,var(--orange),var(--blue));border:2px solid var(--white)}
+.balance{padding:22px 20px 14px;position:relative}
+.balance .lab{font-size:14px;color:var(--ink2)}
+.amt{font-size:42px;font-weight:600;letter-spacing:-.03em;margin:2px 0 6px}
+.amt small{font-size:22px;font-weight:400;color:var(--ink2)}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;font-size:13px;font-weight:500;
+  background:rgba(255,154,77,.2);color:#9a4a0c}
+.spark{display:block;width:100%;height:84px;margin-top:10px}
+.range{display:flex;gap:6px;margin-top:6px}
+.range button{flex:1;border:0;padding:8px 0;border-radius:999px;background:transparent;font:inherit;font-size:13px;color:var(--ink2);cursor:pointer}
+.range button.on{background:var(--glass-strong);color:var(--ink);font-weight:500;box-shadow:0 2px 8px rgba(79,140,255,.18)}
+.actions{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}
+.act{padding:12px 0 10px;text-align:center;border:1px solid var(--edge);font:inherit;color:var(--ink);cursor:pointer;border-radius:22px;
+  background:var(--glass);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+.act i{display:grid;place-items:center;width:38px;height:38px;margin:0 auto 6px;border-radius:50%;background:linear-gradient(145deg,#fff,var(--sky))}
+.act:nth-child(2) i{background:linear-gradient(145deg,#fff,var(--peach))}
+.act span{font-size:12.5px}
+svg.ic{width:19px;height:19px;stroke:var(--ink);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.row2{display:grid;grid-template-columns:1.15fr 1fr;gap:12px}
+.card{padding:16px}
+.card h2{margin:0 0 10px;font-size:15px;font-weight:500;color:var(--ink2)}
+.donut{display:block;width:100%;max-width:110px;margin:0 auto}
+.legend{list-style:none;margin:10px 0 0;padding:0;font-size:13px;display:grid;gap:5px}
+.legend li{display:flex;align-items:center;gap:8px}
+.legend b{width:9px;height:9px;border-radius:50%}
+.goal .big{font-size:26px;font-weight:600;letter-spacing:-.02em}
+.goal p{margin:2px 0 12px;font-size:13px;color:var(--ink2)}
+.bar{height:10px;border-radius:99px;background:rgba(79,140,255,.18);overflow:hidden}
+.bar i{display:block;height:100%;width:68%;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--orange))}
+.tx{margin-top:12px;padding:16px 16px 6px}
+.tx header{margin-bottom:6px}
+.tx h2{margin:0;font-size:16px;font-weight:600;color:var(--ink)}
+.tx a{font-size:13px;color:#2b63d6;text-decoration:none;font-weight:500}
+.item{display:flex;align-items:center;gap:12px;padding:11px 0}
+.item+.item{border-top:1px solid rgba(255,255,255,.7)}
+.badge{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;background:var(--mist)}
+.badge.or{background:#ffe6d1}
+.item div.t{flex:1;min-width:0}
+.item .n{font-size:15px;font-weight:500}
+.item .d{font-size:12.5px;color:var(--ink2)}
+.item .v{font-weight:500;font-size:15px}
+.v.in{color:#1f5fd1}
+nav{position:absolute;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-around;padding:10px;border-radius:30px;
+  background:var(--glass-strong)}
+nav button{border:0;background:transparent;width:54px;height:46px;border-radius:20px;display:grid;place-items:center;cursor:pointer}
+nav button.on{background:linear-gradient(135deg,var(--blue),#7fb0ff);box-shadow:0 6px 16px rgba(79,140,255,.4)}
+nav button.on svg{stroke:#fff}
+button:focus-visible,a:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+</style>
+</head>
+<body>
+<main class="phone">
+  <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+  <div class="scroll">
+    <header>
+      <div><div class="hi">Good morning, Maya</div><h1>Your money</h1></div>
+      <div class="avatar" aria-hidden="true">M</div>
+    </header>
+
+    <section class="glass balance" aria-label="Total balance">
+      <div class="lab">Total balance</div>
+      <div class="amt">$24,860<small>.42</small></div>
+      <span class="chip">▲ $1,240 this month</span>
+      <svg class="spark" viewBox="0 0 320 84" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="ln" x1="0" x2="1"><stop offset="0" stop-color="#4f8cff"/><stop offset="1" stop-color="#ff9a4d"/></linearGradient>
+          <linearGradient id="fl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4f8cff" stop-opacity=".28"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+        </defs>
+        <path d="M0 62 C30 58 45 40 75 44 S120 64 150 48 S200 20 235 28 S290 14 320 10 L320 84 L0 84Z" fill="url(#fl)"/>
+        <path d="M0 62 C30 58 45 40 75 44 S120 64 150 48 S200 20 235 28 S290 14 320 10" fill="none" stroke="url(#ln)" stroke-width="3.5" stroke-linecap="round"/>
+        <circle cx="320" cy="10" r="6" fill="#fff" stroke="#ff9a4d" stroke-width="3"/>
+      </svg>
+      <div class="range" role="tablist">
+        <button>1W</button><button class="on">1M</button><button>3M</button><button>1Y</button>
+      </div>
+    </section>
+
+    <div class="actions">
+      <button class="act"><i><svg class="ic" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></i><span>Send</span></button>
+      <button class="act"><i><svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg></i><span>Request</span></button>
+      <button class="act"><i><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18"/></svg></i><span>Cards</span></button>
+      <button class="act"><i><svg class="ic" viewBox="0 0 24 24"><path d="M4 18l5-6 4 3 7-9"/></svg></i><span>Invest</span></button>
+    </div>
+
+    <div class="row2">
+      <section class="glass card" aria-label="Spending">
+        <h2>Spent in October</h2>
+        <svg class="donut" viewBox="0 0 120 120" role="img" aria-label="Spending split: 46% home, 30% food, 24% travel">
+          <circle cx="60" cy="60" r="44" fill="none" stroke="#4f8cff" stroke-width="16" stroke-dasharray="127 276" transform="rotate(-90 60 60)" stroke-linecap="round"/>
+          <circle cx="60" cy="60" r="44" fill="none" stroke="#ff9a4d" stroke-width="16" stroke-dasharray="83 276" stroke-dashoffset="-138" transform="rotate(-90 60 60)" stroke-linecap="round"/>
+          <circle cx="60" cy="60" r="44" fill="none" stroke="#a9cdff" stroke-width="16" stroke-dasharray="52 276" stroke-dashoffset="-232" transform="rotate(-90 60 60)" stroke-linecap="round"/>
+          <text x="60" y="58" text-anchor="middle" font-size="17" font-weight="600" fill="#0f2547" font-family="Outfit,sans-serif">$3,120</text>
+          <text x="60" y="74" text-anchor="middle" font-size="10" fill="#41587f" font-family="Outfit,sans-serif">of $4,000</text>
+        </svg>
+        <ul class="legend">
+          <li><b style="background:#4f8cff"></b>Home</li>
+          <li><b style="background:#ff9a4d"></b>Food</li>
+          <li><b style="background:#a9cdff"></b>Travel</li>
+        </ul>
+      </section>
+      <section class="glass card goal" aria-label="Savings goal">
+        <h2>Bali trip fund</h2>
+        <div class="big">$3,400</div>
+        <p>of $5,000 saved</p>
+        <div class="bar"><i></i></div>
+        <p style="margin:12px 0 0">$320 a month gets you there by March.</p>
+      </section>
+    </div>
+
+    <section class="glass tx" aria-label="Recent activity">
+      <header><h2>Recent activity</h2><a href="#all">See all</a></header>
+      <div class="item">
+        <div class="badge or"><svg class="ic" viewBox="0 0 24 24"><path d="M5 11h14l-1 8H6zM9 11V7a3 3 0 016 0v4"/></svg></div>
+        <div class="t"><div class="n">Fresh Market</div><div class="d">Groceries · Today</div></div><div class="v">−$64.20</div>
+      </div>
+      <div class="item">
+        <div class="badge"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3v18M17 7H9.5a2.5 2.5 0 000 5h5a2.5 2.5 0 010 5H7"/></svg></div>
+        <div class="t"><div class="n">Salary deposit</div><div class="d">Northwind Studio · Yesterday</div></div><div class="v in">+$4,200.00</div>
+      </div>
+      <div class="item">
+        <div class="badge or"><svg class="ic" viewBox="0 0 24 24"><path d="M3 12l18-8-8 18-2-8z"/></svg></div>
+        <div class="t"><div class="n">Skyline Airways</div><div class="d">Travel · Oct 24</div></div><div class="v">−$218.00</div>
+      </div>
+    </section>
+  </div>
+
+  <nav class="glass" aria-label="Main">
+    <button class="on" aria-label="Home"><svg class="ic" viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9H4z"/></svg></button>
+    <button aria-label="Insights"><svg class="ic" viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"/></svg></button>
+    <button aria-label="Wallet"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M16 13h2"/></svg></button>
+    <button aria-label="Profile"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg></button>
+  </nav>
+</main>
+<script>
+document.querySelectorAll('.range button').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.querySelectorAll('.range button').forEach(function(x){x.classList.remove('on')});
+    b.classList.add('on');
+  });
+});
+</script>
+</body>
+</html>

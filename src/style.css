@@ -1,0 +1,161 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --ink: #0f2547;
+  --ink2: #41587f;
+  --blue: #4f8cff;
+  --sky: #a9cdff;
+  --mist: #eaf3ff;
+  --orange: #ff9a4d;
+  --peach: #ffd2ad;
+  --white: #ffffff;
+  --glass: rgba(255, 255, 255, 0.52);
+  --glass-strong: rgba(255, 255, 255, 0.72);
+  --edge: rgba(255, 255, 255, 0.88);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+  font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+  color: var(--ink);
+  background: linear-gradient(160deg, #dcebff 0%, #f4f9ff 45%, #ffeede 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Ambient Liquid Glass Orbs (referensi-ui.html) */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(38px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.o1 {
+  width: 240px;
+  height: 240px;
+  background: var(--blue);
+  opacity: 0.45;
+  top: -60px;
+  left: -70px;
+}
+
+.o2 {
+  width: 220px;
+  height: 220px;
+  background: var(--orange);
+  opacity: 0.48;
+  top: 240px;
+  right: -85px;
+}
+
+.o3 {
+  width: 250px;
+  height: 250px;
+  background: var(--sky);
+  opacity: 0.68;
+  bottom: 80px;
+  left: -90px;
+}
+
+/* Phone Mockup Frame (Mobile-First Shell) */
+.phone-shell {
+  position: relative;
+  width: 100%;
+  max-width: 418px;
+  height: 100%;
+  height: 100dvh;
+  max-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: linear-gradient(170deg, #cfe3ff 0%, #eef5ff 42%, #fff1e4 100%);
+}
+
+@media (min-width: 500px) {
+  body {
+    padding: 20px 0;
+    overflow: auto;
+  }
+  .phone-shell {
+    height: 870px;
+    max-height: 92vh;
+    border-radius: 44px;
+    box-shadow: 0 24px 60px rgba(79, 140, 255, 0.22);
+    border: 3px solid rgba(255, 255, 255, 0.85);
+  }
+}
+
+/* Liquid Glass Panels (referensi-ui.html) */
+.glass {
+  background: var(--glass);
+  border: 1px solid var(--edge);
+  border-radius: 26px;
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  backdrop-filter: blur(22px) saturate(160%);
+  box-shadow: 0 10px 30px rgba(79, 140, 255, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.glass-strong {
+  background: var(--glass-strong);
+  border: 1px solid var(--edge);
+  border-radius: 26px;
+  -webkit-backdrop-filter: blur(24px) saturate(170%);
+  backdrop-filter: blur(24px) saturate(170%);
+  box-shadow: 0 12px 34px rgba(79, 140, 255, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.glass-pill {
+  background: rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow: inset 0 1px 3px rgba(79, 140, 255, 0.06);
+}
+
+.glass-input:focus {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: var(--blue);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(79, 140, 255, 0.22);
+}
+
+/* Hide scrollbar */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
