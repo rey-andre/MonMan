@@ -172,9 +172,17 @@
       </div>
     </div>
 
-    <!-- Security footnote -->
+    <!-- Creator footnote -->
     <div class="text-center pt-3 text-[11px] text-[#41587f]/80">
-      Dilindungi dengan Row Level Security (RLS) PostgreSQL & Enkripsi Supabase Auth
+      Dibuat oleh 
+      <a
+        href="https://rey-andre.github.io"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="font-semibold text-[#2b63d6] hover:underline inline-flex items-center gap-0.5"
+      >
+        Rey0
+      </a>
     </div>
   </div>
 </template>
