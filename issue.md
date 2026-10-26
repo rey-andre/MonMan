@@ -229,7 +229,28 @@ Berikut adalah daftar masalah (*bugs*, ketidaksesuaian logika, dan celah integri
 
 ---
 
-## 4. Kesimpulan & Rekomendasi Prioritas
+## 4. Status Penyelesaian Masalah (GitHub Issues Resolution)
+
+Seluruh 12 masalah telah berhasil diselesaikan secara bertahap, diuji verifikasi build, dikomit satu per satu, dan di-push ke branch `main` pada repositori GitHub [`rey-andre/MonMan`](https://github.com/rey-andre/MonMan):
+
+| Issue # | Judul & Tipe Perbaikan | Commit Hash | Status GitHub | Ringkasan Solusi |
+| :---: | :--- | :---: | :---: | :--- |
+| **#1** | `fix(crypto)`: Formula pengurangan modal (*cost basis*) saat jual kripto | `1e7be73` | **Closed** | Pengurangan modal proporsional kronologis sesuai rasio unit terjual. |
+| **#2** | `fix(crypto)`: Simbol tanda transaksi `TRANSFER_IN` tertulis minus (−) | `ba33c9c` | **Closed** | Penanda tanda `+` dan warna hijau zamrud (*emerald*) untuk `TRANSFER_IN`. |
+| **#3** | `feat(crypto)`: Opsi mutasi kirim kripto (`TRANSFER_OUT`) di modal | `4cacf8f` | **Closed** | Tombol 4-kolom mutasi di `CryptoTransactionModal` beserta penyesuaian label. |
+| **#4** | `fix(crypto)`: Validasi saldo koin saat jual / kirim kripto | `386b4ad` | **Closed** | Validasi saldo koin real-time, tombol "Maks", dan penjagaan saldo di store. |
+| **#5** | `fix(transactions)`: Validasi transfer saldo antar-rekening | `7c467a8` | **Closed** | Validasi saldo asal, pesan peringatan, dan update saldo transfer simetris. |
+| **#6** | `feat(crypto)`: Catat mutasi fiat saat beli kripto dengan dompet fiat | `db758f1` | **Closed** | Pembuatan mutasi fiat terkait (kategori Investasi), integrasi rollback, dan validasi dana. |
+| **#7** | `fix(crypto)`: Pencegahan duplikasi simbol koin pada penambahan manual | `3cbee14` | **Closed** | Update saldo koin yang ada jika simbol sama dimasukkan kembali. |
+| **#8** | `refactor(formatters)`: Standardisasi utilitas `formatShortIdr` | `52bc954` | **Closed** | Penyatuan ke `@/utils/formatters.js` dengan opsi `withPrefix` dan hapus definisi lokal ganda. |
+| **#9** | `fix(ui)`: Empty state netral pada bar rasio hutang piutang saat data kosong | `277f5a7` | **Closed** | Tampilan bar kaca netral dan teks "Belum ada catatan aktif" saat total 0. |
+| **#10** | `chore`: Pembersihan komponen *dead-code* (`AssetTabs` & `RecentTransactions`) | `f683dae` | **Closed** | Menghapus kedua berkas komponen lama yang tidak terpakai dari repositori. |
+| **#11** | `feat(crypto)`: Simpan nilai kurs historis transaksi USD untuk modal kripto | `ae238c4` | **Closed** | Menyimpan `exchangeRate` saat transaksi dicatat dan menggunakannya pada cost basis. |
+| **#12** | `fix(insights)`: Pencegahan timezone bug pada cashflow NetWorthCard | `6d44385` | **Closed** | Menggunakan string prefix `YYYY-MM` yang kebal pergeseran zona waktu. |
+
+---
+
+## 5. Kesimpulan & Rekomendasi Prioritas
 
 Aplikasi **MonMan** telah berhasil mengimplementasikan seluruh kebutuhan utama pada **PRD.md**, bahkan melampauinya dengan menambahkan fitur-fitur berkelas seperti *Liquid Glass Dark Mode*, *Privacy Mode*, *Universal Header*, dan *Analisis Finansial / Arus Kas*.
 
